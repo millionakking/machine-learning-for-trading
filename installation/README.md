@@ -1,73 +1,75 @@
-# Installation instructions
+# 安装说明
 
-It is not necessary to try and install all libraries at once because this increases the likeliihood of encountering version conflicts. Instead, we recommend that you install the libraries required for a specific chapter as you go along.
+没有必要一次尝试安装所有库，因为这会增加遇到版本冲突的可能性。相反，我们建议您在学习过程中安装特定章节所需的库。
 
-> Update March 2022: `zipline-reloaded`, `pyfolio-reloaded`, `alphalens-reloaded`, and `empyrical-reloaded` are now available on the `conda-forge` channel. The channel `ml4t` only contains outdated versions and will soon be removed.
 
-> There is still incomplete support for MacOS using M1/Silicone chips. Some packages compatible with new architecture are only available via `conda`/`mamba`, others only via `pip`. As a result, there is no single installation script yet - I hope to be able to simplify this as the support across the PyData ecosystem matures. For now, please create separate `conda`/`pip`-based environments to install packages as needed and supported.
+> 2022 年 3 月更新：`zipline-reloaded`、`pyfolio-reloaded`、`alphalens-reloaded` 和 `empyrical-reloaded` 现已在 `conda-forge` 频道上可用。频道 `ml4t` 只包含过时的版本，很快就会被删除。
+
+> 对 M1/Silicone 芯片的 MacOS 的支持仍然不完整. 一些与新架构兼容的包只能通过 `conda`/`mamba` 获得，其他的只能通过 `pip` 获得. 因此，目前还没有单一的安装脚本——我希望随着 PyData 生态系统支持的成熟能够简化它. 现在，请创建单独的基于 `conda`/`pip` 的环境来根据需要和支持安装包。
  
-> Update September 10, 2021: New OS-agnostic environment files `ml4t-base.[txt, yml]` for `pip` (Linux, MacOS) and `conda` (Linux, MacOS, Windows) installs available that include the latest [Zipline](https://github.com/stefan-jansen/zipline-reloaded), [Alphalens](https://github.com/stefan-jansen/alphalens-reloaded) and [Pyfolio](https://github.com/stefan-jansen/pyfolio-reloaded) versions. These files are OS-agnostic because they include only the main libraries and not OS-specific dependencies, leaving the selection of the latest compatible versions and OS-specific dependencies to your package manager of choice.   
+> 2021 年 9 月 10 日更新：适用于 `pip`（Linux、MacOS）和 `conda`（Linux、MacOS、Windows）安装的新操作系统无关环境文件 `ml4t-base.[txt, yml]` 包括最新的 [ Zipline](https://github.com/stefan-jansen/zipline-reloaded)、[Alphalens](https://github.com/stefan-jansen/alphalens-reloaded) 和 [Pyfolio](https://github .com/stefan-jansen/pyfolio-reloaded) 版本. 这些文件与操作系统无关，因为它们仅包含主库而不包含特定于操作系统的依赖项，将最新兼容版本和特定于操作系统的依赖项的选择留给您选择的包管理器.   
 
-> Update April 25, 2021: The [new Zipline version](https://github.com/stefan-jansen/zipline-reloaded) permits running the backtest notebooks without Docker on all operating systems; the installation instructions now refer to Windows/MacOS/Linux environment files.  
+> 2021 年 4 月 25 日更新：[新 Zipline 版本](https://github.com/stefan-jansen/zipline-reloaded) 允许在所有操作系统上运行没有 Docker 的回测笔记本；安装说明现在参考 Windows/MacOS/Linux 环境文件. 
 
-> Update March 14, 2021: I have just released a [new Zipline version](https://github.com/stefan-jansen/zipline-reloaded) that runs on Python 3.7-3.9; see [release info](https://github.com/stefan-jansen/zipline-reloaded/releases/tag/2.0.0rc4) and [docs](https://zipline.ml4trading.io/). As a result, the Docker solution will no longer be necessary going forward and I will provide new environment files over the course of April.
+> 2021 年 3 月 14 日更新：我刚刚发布了一个在 Python 3.7-3.9 上运行的 [新 Zipline 版本](https://github.com/stefan-jansen/zipline-reloaded)；请参阅[发布信息](https://github.com/stefan-jansen/zipline-reloaded/releases/tag/2.0.0rc4) 和[文档](https://zipline.ml4trading.io/)。因此，Docker 解决方案将不再是必需的，我将在 4 月份提供新的环境文件。
 
-> Update Feb 26, 2021: Release 2.0 reduces the number of environments to 2 and bumps the Python version to 3.8 for the main `ml4t` and to 3.6 for the `backtest` environment.
-> Instructions below reflect these changes.
+
+> 2021 年 2 月 26 日更新：2.0 版将环境数量减少到 2，并将主要 `ml4t` 的 Python 版本提高到 3.8，将 `backtest` 环境提高到 3.6。
+> 下面的说明反映了这些变化。
 > 
-> To update the Docker image to the latest version, run:
+> 要将 Docker 映像更新到最新版本，请运行：
 > ```docker pull appliedai/packt:latest```
 
-This book uses Python 3.8 and various ML- and trading-related libraries that can be installed:
+本书使用 Python 3.8 和各种可以安装的 ML 和交易相关的库：
 
-1. Using [mamba](https://github.com/mamba-org/mamba) in [conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) based on the [Miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution and the provided `ml4t.yml` environment files,
-   - If you run into issues with the OS-specific files, please use the agnostic `installation/ml4t-base.yml` file instead.
-   - Run:
+1. 在 [conda 环境](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage) 中使用 [mamba](https://github.com/mamba-org/mamba) -environments.html) 基于 [Miniconda](https://docs.conda.io/en/latest/miniconda.html) 发行版和提供的 `ml4t.yml` 环境文件，
+   - 如果您遇到操作系统特定文件的问题，请改用“installation/ml4t-base.yml”文件。
+   - 运行指令:
    - ```bash
      conda create -n ml4t python=3.8
      mamba env update -n ml4t -f ml4t-base.yml
      conda activate ml4t
      ```
-2. For macOS and Linux only: via [pip](https://pip.pypa.io/en/stable/) in a Python virtual environment created with, e.g., [pyenv](https://github.com/pyenv/pyenv) or [venv](https://docs.python.org/3/tutorial/venv.html) using the provided `ml4t.txt` requirement files.
-3. Deprecated: using [Docker](https://www.docker.com/) Desktop to pull an image from [Docker Hub](https://www.docker.com/products/docker-hub) and create a local container with the requisite software to run the notebooks. 
+2. 仅适用于 macOS 和 Linux：在使用 [pyenv](https://github.com/pyenv/) 创建的 Python 虚拟环境中通过 [pip](https://pip.pypa.io/en/stable/) pyenv) 或 [venv](https://docs.python.org/3/tutorial/venv.html) 使用提供的 `ml4t.txt` 需求文件。
+3. 弃用：使用 [Docker](https://www.docker.com/) Desktop 从 [Docker Hub](https://www.docker.com/products/docker-hub) 拉取镜像并创建本地容器使用运行笔记本电脑所需的软件。
 
-We'll describe how to obtain the source code and then lay out the first two options in turn. Then, we address how to work with [Jupyter](https://jupyter.org/) notebooks to view and execute the code examples. Finally, we list the legacy Docker installation instructions.
+我们将描述如何获取源代码，然后依次列出前两个选项。然后，我们介绍如何使用 [Jupyter](https://jupyter.org/) notebook 来查看和执行代码示例。最后，我们列出了遗留的 Docker 安装说明。
 
-## Sourcing the code samples
+## 获取代码示例
 
-You can work with the code samples by downloading a compressed version of the [GitHub repository](https://github.com/stefan-jansen/machine-learning-for-trading), or by [cloning](https://www.howtogeek.com/451360/how-to-clone-a-github-repository/) its content. The latter will result in a larger download because it includes the commit history. 
+您可以通过下载 [GitHub 存储库](https://github.com/stefan-jansen/machine-learning-for-trading) 的压缩版本或通过 [克隆](https:// www.howtogeek.com/451360/how-to-clone-a-github-repository/) 其内容。后者将导致更大的下载量，因为它包含提交历史记录。
 
-Alternatively, you can create a [fork](https://guides.github.com/activities/forking/) of the repo and continue to develop from there after cloning its content.
+或者，您可以创建存储库的 [fork](https://guides.github.com/activities/forking/)，并在克隆其内容后从那里继续开发。
 
-To work with the code locally, do the following:
-1. Select a file system location where you would like to store the code and the data.
-2. Using the `ssh` or `https` links or the download option provided by the green `Code` button on the [GitHub repository](https://github.com/stefan-jansen/machine-learning-for-trading), either clone or unzip the code to the target folder.
-    - To clone the starter repo, run `git clone https://github.com/stefan-jansen/machine-learning-for-trading.git` and change into the new directory.
-    - If you cloned the repo and did not rename it, the root directory will be called `machine-learning-for-trading`, the ZIP the version will unzip to `machine-learning-for-trading-master`.
+要在本地使用代码，请执行以下操作：
+1. 选择您要存储代码和数据的文件系统位置。
+2. 使用 `ssh` 或 `https` 链接或 [GitHub 存储库](https://github.com/stefan-jansen/machine-learning-for-trading) 上绿色 `Code` 按钮提供的下载选项，将代码克隆或解压缩到目标文件夹。
+    - 克隆github库, 切换到新目录运行 `git clone https://github.com/stefan-jansen/machine-learning-for-trading.git`.
+    - 如果你克隆了 repo 并且没有重命名它，根目录将被称为`machine-learning-for-trading`, 如果是压缩包解压后的根目录为`machine-learning-for-trading-master`.
 
    
-## How to install the required libraries using `conda` environments
+## 如何使用“conda”环境安装所需的库
 
-The instructions rely on Anaconda's [miniconda](https://docs.conda.io/en/latest/miniconda.html) distribution, the [mamba](https://github.com/mamba-org/mamba) package manager to facilitate dependency management, and OS-specific environment files at `installation/[windows|macos|linux]/ml4t.yml` with pinned library versions. 
+这些说明依赖于 Anaconda 的 [miniconda](https://docs.conda.io/en/latest/miniconda.html) 发行版，[mamba](https://github.com/mamba-org/mamba) 包管理器以促进依赖管理，以及 `installation/[windows|macos|linux]/ml4t.yml` 中特定于操作系统的环境文件以及固定的库版本。
 
-Alternatively, there is also an environment file `installation/ml4t-base.yml` that only contains a list of the required libraries without dependencies; if you use this file instead you will obtain the latest versions - just be aware that at some point more recent software may become incompatible with the examples.
+或者，还有一个环境文件“installation/ml4t-base.yml”，它只包含一个没有依赖项的所需库列表；如果您改用此文件，您将获得最新版本 - 请注意，在某些时候更新的软件可能与示例不兼容。
 
-You could also just install the packages required for the notebooks you are interested in; the most recent versions (as of March 2021) should work.
+您也可以只安装您感兴趣的笔记本所需的软件包；最新版本（截至 2021 年 3 月）应该可以使用。
 
-### Install miniconda
+### 安装 miniconda
 
-The notebooks rely on a single virtual environment based on [miniconda3](https://docs.conda.io/en/latest/miniconda.html) that you need to install first. 
+这些notebooks依赖于基于 [miniconda3](https://docs.conda.io/en/latest/miniconda.html) 的单一虚拟环境。
 
-You can find detailed instructions for various operating systems [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
+您可以在 [此处](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) 找到各种操作系统的详细说明。
 
-### Create a conda environment from an environment file
+### 从环境文件创建 conda 环境
 
-[conda] is the package manager provided by the [Anaconda](https://www.anaconda.com/) python distribution. Unfortunately, it is currently [not in very good shape](https://github.com/conda/conda/issues/9707). Instead, we'll use the more recent and much faster [mamba](https://github.com/mamba-org/mamba) package manager to install packages. You can install it using:
+[conda] 是 [Anaconda](https://www.anaconda.com/) python 发行版提供的包管理器。不幸的是，它目前 [状态不是很好](https://github.com/conda/conda/issues/9707)。相反，我们将使用更新更快的 [mamba](https://github.com/mamba-org/mamba) 包管理器来安装包。您可以使用以下方式安装它：
 ```python
 conda install -n base -c conda-forge mamba
 ```
 
-To create a [virtual environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) with the latest versions of the libraries used in the notebooks (as of April 2021), you just need to run one of the following options (depending on your operating system) from the command line in the root directory of the cloned repo:
+使用笔记本中使用的最新版本库创建[虚拟环境](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) (自 2021 年 4 月起），您只需从克隆存储库根目录中的命令行运行以下选项之一（取决于您的操作系统）：
 
 ```bash
 conda env create -n ml4t python=3.8
@@ -76,9 +78,9 @@ mamba env update -n ml4t -f installation/macosx/ml4t.yml # deprecated; use ml4t-
 mamba env update -n ml4t -f installation/linux/ml4t.yml 
 ```
 
-See also [here](https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307) for a more detailed tutorial on virtual environments.
+另请参阅[此处](https://towardsdatascience.com/getting-started-with-python-environments-using-conda-32e9f2779307)，了解有关虚拟环境的更详细教程。
 
-If you want to create a new environment with the latest library versions as of whenever you read this, run
+如果您想在阅读本文时使用最新的库版本创建一个新环境，请运行
 
 ```bash
 conda env create -f installation/ml4t-base.yml
@@ -86,291 +88,293 @@ conda env create -f installation/ml4t-base.yml
 
 ### Activate conda environment
 
-After you've create it, you can activate the environment using its name, which in our case is `ml4t`:
+创建它之后，您可以使用它的名称激活虚拟运行环境，在我们的例子中是“ml4t”：
 
 ```bash
 conda activate ml4t
 ```
 
-To deactivate, simply use
+如要停用，只需使用
 
 ```bash
 conda deactivate
 ```
 
-## Installing the libraries using pip
+## 使用 pip 安装库
 
-You should install the required libraries in a [virtual environment](https://realpython.com/python-virtual-environments-a-primer/). See the docs for the built-in [venv](https://docs.python.org/3/library/venv.html) option, or the [pyenv](https://github.com/pyenv/pyenv) alternative that allows you to run multiple Python versions in parallel.
+您应该在 [虚拟环境](https://realpython.com/python-virtual-environments-a-primer/) 中安装所需的库。请参阅内置 [venv](https://docs.python.org/3/library/venv.html) 选项或 [pyenv](https://github.com/pyenv/pyenv) 的文档允许您并行运行多个 Python 版本的替代方案。
 
-Several of the libraries require previous installation of OS-specific software, which may depend on the state of your machine. We list a few common cases below. Should you encounter other problems, please consult the documentation for the library causing the issue. In case this does not resolve the matter, please raise an issue on our GitHub so we can take a look and update the instructions here accordingly.  
+一些库需要预先安装特定于操作系统的软件，这可能取决于您机器的状态。我们在下面列出了一些常见的情况。如果遇到其他问题，请查阅导致问题的库的文档。如果这不能解决问题，请在我们的 GitHub 上提出问题，以便我们查看并相应地更新此处的说明。
 
-### Pre-requisites: MacOS
+### 先决条件：MacOS
 
-Installation for MacOS requires the following libraries that can be installed via [homebrew](https://brew.sh/):
+MacOS 的安装需要以下可以通过 [homebrew](https://brew.sh/) 安装的库：
 ```bash
 brew install lightgbm swig xz ta-lib
 ```
 
-### Pre-requisites: Linux
+### 先决条件：Linux
 
-On Ubuntu, pre-requisites can be fulfilled via `apt`. For TA-Lib, the [necessary steps](https://artiya4u.medium.com/installing-ta-lib-on-ubuntu-944d8ca24eae) are:
+在 Ubuntu 上，可以通过“apt”满足先决条件。对于 TA-Lib，[必要步骤](https://artiya4u.medium.com/installing-ta-lib-on-ubuntu-944d8ca24eae) 是：
 
 ```bash
-# install the build tool
+# 安装构建工具
 sudo apt install build-essential wget -y
 
-# Download and extract the source code
+# 下载并解压源代码
 wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz
 tar -xvf ta-lib-0.4.0-src.tar.gz
 
-# Config and build from source.
+# 配置源代码和构建。
 cd ta-lib/
 ./configure --prefix=/usr
 make
 
-# Install to system
+# 安装到系统
 sudo make install
 ```
 
-### Installing the requirements
+### 安装要求
 
-Assuming you have created and activated a virtual environment, you just need to run (depending on your OS):
+假设您已经创建并激活了一个虚拟环境，您只需要运行（取决于您的操作系统）：
 ```bash
 pip install -U pip setuptools wheel
 pip install -r installation/macosx/ml4t.txt # for macOS; deprecated; use ml4t-base.txt
 pip install -r installation/linux/ml4t.txt # for Ubuntu
 ```
 
-## Post-installation instructions
+## 安装后说明
 
 
-### Get a QUANDL API Key
+### 获取 QUANDL API 密钥
 
-To download US equity data that we'll be using for several examples throughout the book in the next step, [register](https://www.quandl.com/sign-up) for a personal Quandl account to obtain an API key. It will be displayed on your [profile](https://www.quandl.com/account/profile) page.
+要下载我们在下一步中用于全书多个示例的美国股票数据，请[注册](https://www.quandl.com/sign-up) 个人 Quandl 帐户以获取 API 密钥.它将显示在您的[个人资料](https://www.quandl.com/account/profile) 页面上。
 
-If you are on a UNIX-based system like Mac OSX, you may want to store the API key in an environment variable such as QUANDL_API_KEY, e.g. by adding `export QUANDL_API_KEY=<your_key>` to your `.bash_profile`.  
+如果您使用的是基于 UNIX 的系统，例如 Mac OSX，您可能希望将 API 密钥存储在环境变量中，例如 QUANDL_API_KEY，例如通过将 export QUANDL_API_KEY=<your_key> 添加到您的 .bash_profile 中。
 
-### Ingesting Zipline data
+### 提取 Zipline 数据
 
-To run Zipline backtests, we need to `ingest` data. See the [Beginner Tutorial](https://zipline.ml4trading.io/beginner-tutorial.html) for more information. 
+要运行 Zipline 回测，我们需要“提取”数据。有关更多信息，请参阅[新手教程](https://zipline.ml4trading.io/beginner-tutorial.html)。
 
-Per default, Zipline stores data in your user directory under `~/.zipline` directory. 
+默认情况下，Zipline 将数据存储在 ~/.zipline 目录下的用户目录中。
 
-From the command prompt, activate your `ml4t` virtual environment and run:
+在命令提示符下，激活您的 `ml4t` 虚拟环境并运行：
 ```bash
 zipline ingest -b quandl
 ``` 
 
-You should see numerous messages (including some warnings that you can ignore) as Zipline processes around 3,000 stock price series.
+当 Zipline 会处理大约 3,000 个股票价格系列，您应该会看到大量消息（包括一些您可以忽略的警告）。
 
-### Working with Jupyter notebooks
 
-This section covers how to set up notebook extension that facilitate working in this environment and how to convert notebooks to python script if preferred. 
+### 使用 Jupyter 笔记本
 
-#### Set up jupyter extensions
+本节介绍如何设置有助于在此环境中工作的笔记本扩展，以及如何将笔记本转换为 python 脚本（如果愿意）。
 
-jupyter notebooks can use a range of [extension](https://github.com/ipython-contrib/jupyter_contrib_nbextensions) provided by the community. There are many useful ones that are described in the [documentation](https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/).
+#### 设置 jupyter 扩展
 
-The notebooks in this repo are formatted to use the [Table of Contents (2)](https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/nbextensions/toc2/README.html) extension. For the best experience, activate it using the Configurator in the [Nbextensions](https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator) tab available in your browser after starting the jupyter server. Modify the settings to check the option 'Leave h1 items out of ToC' if not set by default.
+jupyter notebooks 可以使用社区提供的一系列[扩展名](https://github.com/ipython-contrib/jupyter_contrib_nbextensions)。 [文档](https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/) 中描述了许多有用的内容。
 
-#### Converting jupyter notebooks to python scripts
+此 repo 中的笔记本被格式化为使用 [目录 (2)](https://jupyter-contrib-nbextensions.readthedocs.io/en/latest/nbextensions/toc2/README.html) 扩展。为了获得最佳体验，请在启动 jupyter 服务器后使用浏览器中可用的 [Nbextensions](https://github.com/Jupyter-contrib/jupyter_nbextensions_configurator) 选项卡中的配置器激活它。如果默认情况下未设置，请修改设置以选中选项“Leave h1 items out of ToC”。
 
-The book uses [jupyter](https://jupyter.org/) notebooks to present the code with extensive commentary and context information and facilitate the visualization of results in one place. Some of the code examples are longer and make more sense to run as `python` scripts; you can convert a notebook to a script by running the following on the command line:
+#### 将 jupyter 笔记本转换为 python 脚本
+
+本书使用 [jupyter](https://jupyter.org/) notebooks 来呈现带有大量注释和上下文信息的代码，并促进在一个地方可视化结果。一些代码示例更长，更适合作为 `python` 脚本运行；您可以通过在命令行上运行以下命令将笔记本转换为脚本：
 
 ```bash
 $ jupyter nbconvert --to script [YOUR_NOTEBOOK].ipynb
 ```
 
-## Legacy Instructions: Running the notebooks using a Docker container
+## 遗留说明：使用 Docker 容器运行笔记本
 
-Docker Desktop is a very popular application for MacOS and Windows machines because is permits for the easy sharing of containerized applications across different OS. For this book, we have a Docker image that let's you instantiate a container to run Ubuntu 20.04 as a guest OS with the pre-installed [conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) on Windows 10 or Mac OS X without worrying about dependencies on your host.
+Docker Desktop 是 MacOS 和 Windows 机器上非常流行的应用程序，因为它允许跨不同操作系统轻松共享容器化应用程序。对于本书，我们有一个 Docker 镜像，让您可以实例化一个容器来运行 Ubuntu 20.04 作为来宾操作系统，并预装 [conda 环境](https://docs.conda.io/projects/conda/en/latest /user-guide/tasks/manage-environments.html) 在 Windows 10 或 Mac OS X 上，无需担心对主机的依赖性。
 
-### Installing Docker Desktop 
+### 安装 Docker 桌面
 
-As usual, installation differs for Mac OS X and Window 10, and requires an additional step for Windows 10 Home to enable virtualization. 
+与往常一样，Mac OS X 和 Window 10 的安装有所不同，Windows 10 Home 需要额外的步骤才能启用虚拟化。
 
-We'll cover installation for each OS separately and then address some setting adjustments necessary in both cases.
+我们将分别介绍每个操作系统的安装，然后解决两种情况下必要的一些设置调整。
 
-#### Docker Desktop on Mac OS X
+#### Mac OS X 上的 Docker 桌面
 
-Installing Docker Desktop on Mac OS X is very straightforward:
-1. Follow the detailed guide in Docker [docs](https://docs.docker.com/docker-for-mac/install/) to download and install Docker Desktop from [Docker Hub](https://hub.docker.com/editions/community/docker-ce-desktop-mac/). It also covers how Docker Desktop and Docker Toolbox [can coexist](https://docs.docker.com/docker-for-mac/docker-toolbox/).
-2. Use [homebrew](https://brew.sh/) by following the tutorial [here](https://aspetraining.com/resources/blog/docker-on-mac-homebrew-a-step-by-step-tutorial).
+在 Mac OS X 上安装 Docker Desktop 非常简单：
+1. 按照 Docker [文档](https://docs.docker.com/docker-for-mac/install/) 中的详细指南，从 [Docker Hub](https://hub.docker) 下载并安装 Docker Desktop .com/editions/community/docker-ce-desktop-mac/）。它还涵盖了 Docker Desktop 和 Docker Toolbox 如何 [可以共存](https://docs.docker.com/docker-for-mac/docker-toolbox/)。
+2. 按照 [此处](https://aspetraining.com/resources/blog/docker-on-mac-homebrew-a-step-by-step-tutorial）。
 
-Open terminal and run the following test to check that Docker works:
+打开终端并运行以下测试以检查 Docker 是否正常工作：
 ```Docker
 docker run hello-world
 ```
 
-Review the [Getting Started](https://docs.docker.com/docker-for-mac/) guide for Mac OS to familiarize yourself with key settings and commands.
+查看适用于 Mac OS 的[入门](https://docs.docker.com/docker-for-mac/) 指南，熟悉关键设置和命令。
 
-#### Docker Desktop on Windows
+#### Windows 上的 Docker 桌面
 
-Docker Desktop works on both Windows 10 Home and Pro editions; the Home edition requires the additional step of enabling the Virtual Machine Platform.  
+Docker Desktop 适用于 Windows 10 家庭版和专业版；家庭版需要启用虚拟机平台的额外步骤。
 
-##### Windows 10 Home: enabling the Virtual Machine Platform
+##### Windows 10 家庭版：启用虚拟机平台
 
-You can now install Docker Desktop on Windows Home machines using the [Windows Subsystem for Linux](https://fossbytes.com/what-is-windows-subsystem-for-linux-wsl/) (WSL 2)  backend. Docker Desktop on Windows Home is a full version of Docker Desktop for Linux container development.
+您现在可以使用 [适用于 Linux 的 Windows 子系统](https://fossbytes.com/what-is-windows-subsystem-for-linux-wsl/) (WSL 2) 后端在 Windows Home 计算机上安装 Docker Desktop。 Windows Home 上的 Docker Desktop 是用于 Linux 容器开发的完整版 Docker Desktop。
 
-Windows 10 Home machines must meet certain [requirements](https://docs.docker.com/docker-for-windows/install-windows-home/#system-requirements). These include Windows 10 Home version 2004 (released May 2020) or higher. The Docker Desktop Edge release also supports Windows 10, version 1903 or higher.
+Windows 10 家庭版机器必须满足某些 [要求](https://docs.docker.com/docker-for-windows/install-windows-home/#system-requirements)。其中包括 Windows 10 家庭版 2004（2020 年 5 月发布）或更高版本。 Docker Desktop Edge 版本还支持 Windows 10 版本 1903 或更高版本。
 
-Enable WSL 2 as described [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10), taking the following steps:
+按照[此处](https://docs.microsoft.com/en-us/windows/wsl/install-win10)所述启用 WSL 2，执行以下步骤：
 
-1. Enable the optional Windows Subsystem for Linux feature. Open PowerShell as Administrator and run:
+1. 启用可选的适用于 Linux 的 Windows 子系统功能。以管理员身份打开 PowerShell 并运行：
     ```bash
     dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
    ```
-2. Check that your system meets the requirements outlined [here](https://docs.microsoft.com/en-us/windows/wsl/install-win10#requirements) and update your Windows 10 version if necessary.
-3. Enable the Virtual Machine Platform optional feature by opening PowerShell as and Administrator and run:
+2. 检查您的系统是否满足[此处](https://docs.microsoft.com/en-us/windows/wsl/install-win10#requirements) 列出的要求，并在必要时更新您的 Windows 10 版本。
+3. 通过以管理员身份打开 PowerShell 并运行来启用虚拟机平台可选功能：
     ```bash
     dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
     ```
-4. Restart your machine to complete the WSL install and update to WSL 2.
-5. Download and run the Linux kernel [update package](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi). You will be prompted for elevated permissions, select ‘yes’ to approve this installation.
-6. Set WSL 2 as your default version when installing a new Linux distribution by open PowerShell as Administrator and run the following command:
+4. 重新启动计算机以完成 WSL 安装并更新到 WSL 2。
+5. 下载并运行 Linux 内核 [更新包](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)。系统将提示您提升权限，选择“是”以批准此安装。
+6. 通过以管理员身份打开 PowerShell 并运行以下命令，在安装新的 Linux 发行版时将 WSL 2 设置为默认版本：
     ```bash
     wsl --set-default-version 2
     ```
   
-##### Windows 10: Docker Desktop installation 
+##### Windows 10：Docker 桌面安装
 
-Once we have enabled WSL 2 for Windows Home, the remaining steps to install Docker Desktop are the same for Windows 10 [Home](https://docs.docker.com/docker-for-windows/install-windows-home/) and [Pro, Enterprise or Education](https://docs.docker.com/docker-for-windows/install-windows-home/). Refer to the linked guides for each OS version for system requirements.
+一旦我们为 Windows Home 启用了 WSL 2，安装 Docker Desktop 的其余步骤对于 Windows 10 [Home](https://docs.docker.com/docker-for-windows/install-windows-home/) 是相同的和 [专业版、企业版或教育版](https://docs.docker.com/docker-for-windows/install-windows-home/)。有关系统要求，请参阅每个操作系统版本的链接指南。
 
-1. Download and run (double-click) the installer from [Docker Hub](https://hub.docker.com/editions/community/docker-ce-desktop-windows/).
-2. When prompted, ensure the Enable Hyper-V Windows Features option is selected on the Configuration page.
-3. Follow the instructions on the installation wizard to authorize the installer and proceed with the install.
-4. When the installation is successful, click Close to complete the installation process.
-5. If your admin account is different to your user account, you must add the user to the docker-users group. Run Computer Management as an administrator and navigate to Local Users and Groups > Groups > docker-users. Right-click to add the user to the group. Log out and log back in for the changes to take effect.
+1. 从 [Docker Hub](https://hub.docker.com/editions/community/docker-ce-desktop-windows/) 下载并运行（双击）安装程序。
+2. 出现提示时，确保在配置页面上选择启用 Hyper-V Windows 功能选项。
+3. 按照安装向导的说明授权安装程序并继续安装。
+4. 安装成功后，点击关闭完成安装过程。
+5. 如果您的管理员帐户与您的用户帐户不同，您必须将用户添加到 docker-users 组。以管理员身份运行计算机管理并导航到本地用户和组 > 组 > docker-users。右键单击以将用户添加到组中。注销并重新登录以使更改生效。
 
-Open Powershell and run the following test to check that Docker works:
+打开 Powershell 并运行以下测试以检查 Docker 是否正常工作：
 ```Docker
 docker run hello-world
 ```
 
-Review the [Getting Started](https://docs.docker.com/docker-for-windows/) guide for Windows to familiarize yourself with key settings and commands.
+查看适用于 Windows 的[入门](https://docs.docker.com/docker-for-windows/) 指南，熟悉关键设置和命令。
 
-### Docker Desktop Settings: memory and file sharing 
+### Docker 桌面设置：内存和文件共享
 
-The getting started guides for each OS referenced above describe the Docker Desktop settings.
+上面提到的每个操作系统的入门指南描述了 Docker 桌面设置。
 
-#### Increasing memory 
+#### 增加内存 
 
-- Under Preferences, look for Resources to find out how you can increase the memory allocated to the container; the default setting is too low given the size of the data. Increase to at least 4GB, better 8GB or more.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-- Several examples are quite memory-intensive, for example the NASDAQ tick data and the SEC filings example in Chapter 2, and will require significantly higher memory allocation.
+- 在首选项下，查找资源以了解如何增加分配给容器的内存；考虑到数据的大小，默认设置太低。增加到至少 4GB，最好是 8GB 或更多。                                                                                                                            
+- 有几个示例非常占用内存，例如第 2 章中的 NASDAQ 报价数据和 SEC 文件示例，并且需要显着更高的内存分配。
 
-#### Troubleshooting file sharing permissions
+#### 文件共享权限疑难解答
 
-We will download the code examples and data to the local drive on your host OS but run it from the Docker container by mounting your local drive as a volume. This should work fine with the current versions but in case you receive **permission errors** , please refer to the **File Sharing** sections in the Docker user guides. The Docker GUIs let you assign permissions explicitly. See also (slightly outdated) explanation [here](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c).
+我们会将代码示例和数据下载到主机操作系统上的本地驱动器，但通过将本地驱动器安装为卷来从 Docker 容器运行它。这应该适用于当前版本，但如果您收到**权限错误**，请参阅 Docker 用户指南中的**文件共享**部分。 Docker GUI 允许您显式分配权限。另请参阅（稍微过时的）解释 [此处](https://rominirani.com/docker-on-windows-mounting-host-directories-d96f3f056a2c)。
   
-### Sourcing the code samples
+### 获取代码示例
 
-You can work with the code samples by downloading a compressed version of the [GitHub repository](https://github.com/stefan-jansen/machine-learning-for-trading), or by [cloning](https://www.howtogeek.com/451360/how-to-clone-a-github-repository/) its content. The latter will result in a larger download because it includes the commit history. 
+您可以通过下载 [GitHub 存储库](https://github.com/stefan-jansen/machine-learning-for-trading) 的压缩版本或通过 [克隆](https:// www.howtogeek.com/451360/how-to-clone-a-github-repository/) 其内容。后者将导致更大的下载量，因为它包含提交历史记录。
 
-Alternatively, you can create a [fork](https://guides.github.com/activities/forking/) of the repo and continue to develop from there after cloning its content.
 
-To work with the code locally, do the following:
-1. Select a file system location where you would like to store the code and the data.
-2. Using the `ssh` or `https` links or the download option provided by the green `Code` button on the [GitHub repository](https://github.com/stefan-jansen/machine-learning-for-trading), either clone or unzip the code to the target folder.
-    - To clone the starter repo, run `git clone https://github.com/stefan-jansen/machine-learning-for-trading.git` and change into the new directory.
-    - If you cloned the repo and did not rename it, the root directory will be called `machine-learning-for-trading`, the ZIP the version will unzip to `machine-learning-for-trading-master`.
+或者，您可以创建存储库的 [fork](https://guides.github.com/activities/forking/)，并在克隆其内容后从那里继续开发。
 
-### Get a QUANDL API Key
+要在本地使用代码，请执行以下操作：
+1. 选择您要存储代码和数据的文件系统位置。
+2. 使用 `ssh` 或 `https` 链接或 [GitHub 存储库](https://github.com/stefan-jansen/machine-learning-for-trading) 上绿色 `Code` 按钮提供的下载选项)，将代码克隆或解压缩到目标文件夹。
+    - 要克隆入门仓库，请运行 `git clone https://github.com/stefan-jansen/machine-learning-for-trading.git` 并切换到新目录。
+    - 如果你克隆了 repo 并且没有重命名它，根目录将被称为 `machine-learning-for-trading`，ZIP 版本将解压到 `machine-learning-for-trading-master`。
 
-To download US equity data that we'll be using for several examples throughout the book in the next step, [register](https://www.quandl.com/sign-up) for a personal Quandl account to obtain an API key. It will be displayed on your [profile](https://www.quandl.com/account/profile) page.
+### 获取 QUANDL API 密钥
 
-If you are on a UNIX-based system like Mac OSX, you may want to store the API key in an environment variable such as QUANDL_API_KEY, e.g. by adding `export QUANDL_API_KEY=<your_key>` to your `.bash_profile`.  
+要下载我们将在下一步中用于全书多个示例的美国股票数据，请[注册](https://www.quandl.com/sign-up) 个人 Quandl 帐户以获取 API 密钥.它将显示在您的[个人资料](https://www.quandl.com/account/profile) 页面上。
 
-### Downloading the Docker image and running the container
+如果您使用的是基于 UNIX 的系统，例如 Mac OSX，您可能希望将 API 密钥存储在环境变量中，例如 QUANDL_API_KEY，例如通过将 export QUANDL_API_KEY=<your_key> 添加到您的 .bash_profile 中。
 
-We'll be using a Docker [image](https://hub.docker.com/repository/docker/appliedai/packt) based on the Ubuntu 20.04 OS with [Anaconda](https://www.anaconda.com/)'s [miniconda](https://docs.conda.io/en/latest/miniconda.html) Python distribution installed. It comes with two conda environments described below. 
+### 下载 Docker 镜像并运行容器
 
-With a single Docker command, we can accomplish several things at once (see the Getting Started guides linked above for more detail):
-- only on the first run: pull the Docker image from the Docker Hub account `appliedai` and the repository `packt` with the tag `latest` 
-- creates a local container with the name `ml4t` and runs it in interactive mode, forwarding the port 8888 used by the `jupyter` server
-- mount the current directory containing the starter project files as a volume in the directory `/home/packt/ml4t` inside the container
-- set the environment variable `QUANDL_API_KEY` with the value of your key (that you need to fill in for `<your API key>`), and
-- start a `bash` terminal inside the container, resulting in a new command prompt for the user `packt`.
+我们将使用基于 Ubuntu 20.04 操作系统和 [Anaconda](https://www.anaconda.com/ ) 的 [miniconda](https://docs.conda.io/en/latest/miniconda.html) 安装了 Python 发行版。它带有下面描述的两个 conda 环境。
 
-1. Open a Terminal or a Powershell window.
-2. Navigate to the directory containing the [ML4T](https://github.com/stefan-jansen/machine-learning-for-trading) code samples that you sourced above.
-3. In the root directory of the local version of the repo, run the following command, taking into account the different path formats required by Mac and Windows:
-    - **Mac OS**: you can use the `pwd` command as a shell variable that contains the absolute path to the present working directory (and you could use `$QUANDL_API_KEY` if you created such an environment variable in the previous step):  
+使用单个 Docker 命令，我们可以同时完成几件事（有关更多详细信息，请参阅上面链接的入门指南）：
+- 仅在第一次运行时：从 Docker Hub 帐户“appliedai”和带有“latest”标签的存储库“packt”中拉取 Docker 镜像
+- 创建一个名为 `ml4t` 的本地容器并以交互模式运行它，转发 `jupyter` 服务器使用的端口 8888
+- 将包含启动项目文件的当前目录作为卷安装在容器内的目录“/home/packt/ml4t”中
+- 将环境变量 `QUANDL_API_KEY` 设置为您的密钥值（您需要为 `<your API key>` 填写），以及
+- 在容器内启动一个 `bash` 终端，为用户 `packt` 生成一个新的命令提示符。
+
+1. 打开终端或 Powershell 窗口。
+2. 导航到包含您在上面获取的 [ML4T](https://github.com/stefan-jansen/machine-learning-for-trading) 代码示例的目录。
+3. 在本地版本repo的根目录下，运行以下命令，同时考虑到Mac和Windows要求的路径格式不同：
+    - **Mac OS**：您可以将 `pwd` 命令用作包含当前工作目录的绝对路径的 shell 变量（如果您在上一步中创建了这样的环境变量，则可以使用 `$QUANDL_API_KEY` ):
         ```docker
         docker run -it -v $(pwd):/home/packt/ml4t -p 8888:8888 -e QUANDL_API_KEY=<your API key> --name ml4t appliedai/packt:latest bash
         ```
-   - **Windows**: enter the absolute path to the current directory **with forward slashes**, e.g. `C:/Users/stefan/Documents/machine-learning-for-trading` instead of `C:\Users\stefan\Documents\machine-learning-for-trading`, so that the command becomes (for this example):                                                                                                                                                                                                                                                                                                                                                                                                  
+   - **Windows**：输入当前目录的绝对路径**带正斜杠**，例如`C:/Users/stefan/Documents/machine-learning-for-trading` 而不是 `C:\Users\stefan\Documents\machine-learning-for-trading`, 在Windows中命令为：                                                                                                                                                                                                                                                                                                                                                                                                 
                                                                                                                                                                                                                                                                                                                                                                                                                   
      ```docker
      docker run -it -v C:/Users/stefan/Documents/machine-learning-for-trading:/home/packt/ml4t -p 8888:8888 -e QUANDL_API_KEY=<your API key> --name ml4t appliedai/packt:latest bash
      ```              
-4. Run `exit` from the container shell to exit and stop the container. 
-5. To resume working, you can run `docker start -a -i ml4t` from Mac OS terminal or Windows Powershell in the root directory to restart the container and attach it to the host shell in interactive mode (see Docker docs for more detail).
+4. 从容器 shell 运行 exit 以退出并停止容器。
+5. 要恢复工作，您可以从 Mac OS 终端或 Windows Powershell 在根目录中运行 `docker start -a -i ml4t` 以重新启动容器并以交互模式将其附加到主机 shell（有关更多详细信息，请参阅 Docker 文档).
 
-> To update the Docker image to the latest version, run:
+> 要将 Docker 映像更新到最新版本，请运行：
 > ```docker pull appliedai/packt:latest```
 
-### Running the notebooks from the container
+### 从容器运行notebooks
 
-Now you are running a shell inside the container and can access both [conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Run `conda env list` to see that there are a `base`, `ml4t` (default), and a `backtest` environments.
+现在您在容器内运行一个 shell，并且可以访问两个 [conda 环境](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)。运行 `conda env list` 以查看有 `base`、`ml4t`（默认）和 `backtest` 环境。
 
-The `backtest` environment is necessary because the latest version of Zipline 1.4.1 only support Python 3.6 and older versions of various other dependencies that partly also require compilation. I hope to update Zipline in the future to run on Python 3.8 as well.
+`backtest` 环境是必需的，因为最新版本的 Zipline 1.4.1 仅支持 Python 3.6 和其他各种依赖项的旧版本，这些依赖项部分也需要编译。我希望将来更新 Zipline 以在 Python 3.8 上运行。
 
-We use the environment `ml4t` except for a dozen notebooks related to backtesting that use Zipline directly inputs generated by Zipline. The notebooks that require the `backtest` environment contain a notification. 
+除了使用 Zipline 直接输入由 Zipline 生成的十几个与回溯测试相关的笔记本外，我们使用环境“ml4t”。需要“回测”环境的笔记本包含通知。
 
-> If you want to use a GPU for the deep learning examples, you can run `conda install tensorflow-gpu` if you have the proper [CUDA version](https://www.tensorflow.org/install/source#gpu) installed. 
-> **Alternatively**, you can leverage [TensorFlow's Docker](https://www.tensorflow.org/install/docker) images and install any additional libraries there; the DL examples don't require anything that's overly complicated to install.
+> 如果您想为深度学习示例使用 GPU，如果您有合适的 [CUDA 版本](https://www.tensorflow.org/install/source#gpu)，则可以运行 `conda install tensorflow-gpu`安装。
+> **或者**，您可以利用 [TensorFlow 的 Docker](https://www.tensorflow.org/install/docker) 图像并在那里安装任何其他库； DL 示例不需要安装任何过于复杂的东西。
 
-- You can switch to another environment using `conda activate <env_name>` or using the Jupyter Notebook or Jupyter Lab Kernel menu thanks to the [nb_conda_kernels](https://github.com/Anaconda-Platform/nb_conda_kernels) extension (see below).
-- You may see an error message suggesting you run `conda init bash`. After doing so, reload the shell with the command `source .bashrc`.
+- 由于 [nb_conda_kernels](https://github.com/Anaconda-Platform/nb_conda_kernels) 扩展（见下文），您可以使用 `conda activate <env_name>` 或使用 Jupyter Notebook 或 Jupyter Lab Kernel 菜单切换到另一个环境).
+- 您可能会看到一条错误消息，提示您运行 `conda init bash`。这样做之后，使用命令 source .bashrc 重新加载 shell。
 
-### Ingesting Zipline data
+### 摄取 Zipline 数据
 
-To run Zipline backtests, we need to `ingest` data. See the [Beginner Tutorial](https://zipline.ml4trading.io/beginner-tutorial.html) for more information. 
+要运行 Zipline 回测，我们需要“摄取”数据。有关更多信息，请参阅[新手教程](https://zipline.ml4trading.io/beginner-tutorial.html)。
 
-The image has been configured to store the data in a `.zipline` directory in the directory where you started the container (which should be the root folder of the starter code you've downloaded above). 
+该图像已配置为将数据存储在您启动容器的目录中的 .zipline 目录中（该目录应该是您在上面下载的入门代码的根文件夹）。
 
-From the command prompt of the container shell, run
+在容器 shell 的命令提示符下，运行
 ```bash
 conda activate backtest
 zipline ingest -b quandl
 ``` 
-You should see numerous messages as Zipline processes around 3,000 stock price series.
+Zipline 会处理大约 3,000 个股票价格系列，您应该会看到大量消息。
 
-#### Known Zipline issues
+#### 已知的 Zipline 问题
 
-> I have patched the following country code issue in the [latest Zipline version](https://github.com/stefan-jansen/zipline/commit/b33e5c955a58d888f55101874f45cd141c61d3e1), so you should not have to manually fiddle with the asset database any longer.
+> 我已经在 [最新的 Zipline 版本](https://github.com/stefan-jansen/zipline/commit/b33e5c955a58d888f55101874f45cd141c61d3e1) 中修复了以下国家代码问题，因此您不必再手动摆弄资产数据库.
 
-When running a backtest, you will likely encounter an [error](https://github.com/quantopian/zipline/issues/2517) because the current Zipline version requires a country code entry in the exchanges table of the `assets-7.sqlite` database where it stores the asset metadata.
+运行回测时，您可能会遇到[错误](https://github.com/quantopian/zipline/issues/2517)，因为当前的 Zipline 版本需要在 `assets-7 的交换表中输入国家代码条目.sqlite 数据库，用于存储资产元数据。
 
-The linked [GitHub issue](https://github.com/quantopian/zipline/issues/2517) describes how to address this by opening the [SQLite database](https://sqlitebrowser.org/dl/) and entering `US` in the `country_code` field of the exchanges table.
+链接的 [GitHub 问题](https://github.com/quantopian/zipline/issues/2517) 描述了如何通过打开 [SQLite 数据库](https://sqlitebrowser.org/dl/) 并输入`来解决这个问题US` 在 exchanges 表的 `country_code` 字段中。
 
-In practice, this looks as follows:
+实际上，这看起来如下：
 
-1. Use the [SQLite Browser](https://sqlitebrowser.org/dl/) to open the file `assets-7.sqlite` in the directory containing your latest bundle download. The path will look like this (on Linux/Max OSX) if you ran the command as just described:  `~/machine-learning-for-trading/data/.zipline/data/quandl/2020-12-29T02;06;08.894865/`
-2. Select the table `exchanges` as outlined in the following screenshot:
+1. 使用 [SQLite 浏览器](https://sqlitebrowser.org/dl/) 在包含最新包下载的目录中打开文件 `assets-7.sqlite`。如果您按照刚刚描述的方式运行命令，路径将如下所示（在 Linux/Max OSX 上）：`~/machine-learning-for-trading/data/.zipline/data/quandl/2020-12-29T02;06; 08.894865/`
+2. 选择表“exchanges”，如下图所示：
 <p align="center">
 <img src="https://i.imgur.com/khq6gtX.png" title="Modifying QUANDL SQLite - Step 1" width="50%"/>
 </p>
-3. Insert the country code and save the result (you'll get a prompt when closing the program):
+3. 输入国家代码并保存结果（关闭程序时会有提示）：
 <p align="center">
 <img src="https://i.imgur.com/mtdiylk.png" title="Modifying QUANDL SQLite - Step 1" width="50%"/>
 </p>
 
-That's all. Unfortunately, you (had to..) repeat this everytime you run `zipline ingest -b quandl`. This error still occurs when you run `zipline ingest` for the default `quantopian-quandl` bundle because this command bypasses the `ingest` process and downloads instead a compressed version of the result generated by an earlier version of Zipline.  
+就这样。不幸的是，你（必须..）每次运行 `zipline ingest -b quandl` 时都要重复这个。当您为默认的 quantopian-quandl 包运行 zipline ingest 时，此错误仍然会发生，因为此命令绕过 ingest 过程并下载由早期版本的 Zipline 生成的结果的压缩版本。
 
-### Working with notebooks int the Docker container
+### 在 Docker 容器中使用notebooks
 
-You can run [jupyter](https://jupyter.org/) notebooks using either the traditional [notebook](https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/what_is_jupyter.html) or the more recent [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/) interface; both are available in all `conda` environments. Moreover, you start jupyter from the `base` environment and switch the environment from the notebook due to the `nb_conda_kernels` package (see [docs](https://github.com/Anaconda-Platform/nb_conda_kernels). 
+您可以使用传统的 [notebook](https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/what_is_jupyter.html) 或更新的 [Jupyter Lab](https://jupyterlab.readthedocs.io/en/stable/) 界面；两者都适用于所有“conda”环境。此外，由于 `nb_conda_kernels` 包，您从 `base` 环境启动 jupyter 并从 notebook 切换环境（参见 [docs](https://github.com/Anaconda-Platform/nb_conda_kernels)。
 
-To get started, run one of the following two commands:
+要开始，请运行以下两个命令之一：
 ```bash
 jupyter notebook --ip 0.0.0.0 --no-browser --allow-root
 jupyter lab --ip 0.0.0.0 --no-browser --allow-root
 ```
-There are also `alias` shortcuts for each so you don't have to type them: 
+每个都有“别名”快捷方式，因此您不必键入它们：
 - `nb` for the `jupyter notebook` version, and 
 - `lab` for the `jupyter lab` version.
 
-The container terminal will display a few messages while spinning up the jupyter server. When complete, it will display a URL that you should paste into your browser to access the jupyter server from the current working directory.
+容器终端将在启动 jupyter 服务器时显示一些消息。完成后，它将显示一个 URL，您应该将其粘贴到浏览器中以从当前工作目录访问 jupyter 服务器。
 
-You can modify any of the environments using the standard conda workflow outlined below; see Docker [docs](https://docs.docker.com/storage/) for how to persist containers after making changes.  
+您可以使用下面概述的标准 conda 工作流程修改任何环境；请参阅 Docker [文档](https://docs.docker.com/storage/)，了解如何在进行更改后保留容器。
