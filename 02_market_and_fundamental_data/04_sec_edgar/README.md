@@ -1,37 +1,37 @@
 
-## How to work with Fundamental data
+## 如何使用基础数据
 
-The Securities and Exchange Commission (SEC) requires US issuers, that is, listed companies and securities, including mutual funds to file three quarterly financial statements (Form 10-Q) and one annual report (Form 10-K), in addition to various other regulatory filing requirements.
+美国证券交易委员会 (SEC) 要求美国发行人，即上市公司和证券，包括互惠基金，除提交各种其他监管备案要求。
 
-Since the early 1990s, the SEC made these filings available through its Electronic Data Gathering, Analysis, and Retrieval (EDGAR) system. They constitute the primary data source for the fundamental analysis of equity and other securities, such as corporate credit, where the value depends on the business prospects and financial health of the issuer. 
+自 1990 年代初期以来，SEC 通过其电子数据收集、分析和检索 (EDGAR) 系统提供了这些文件。它们构成了股票和其他证券（例如公司信贷）基本面分析的主要数据来源，其中价值取决于发行人的业务前景和财务状况。
 
-#### Automated processing using XBRL markup
+#### 使用 XBRL 标记自动处理
 
-Automated analysis of regulatory filings has become much easier since the SEC introduced XBRL, a free, open, and global standard for the electronic representation and exchange of business reports. XBRL is based on XML; it relies on [taxonomies](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) that define the meaning of the elements of a report and map to tags that highlight the corresponding information in the electronic version of the report. One such taxonomy represents the US Generally Accepted Accounting Principles (GAAP).
+自 SEC 引入 XBRL 以来，对监管文件的自动分析变得更加容易，XBRL 是一种免费、开放的全球标准，用于业务报告的电子表示和交换。 XBRL 基于 XML；它依赖于 [taxonomies](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) 来定义报告元素的含义并映射到突出显示电子版报告中的相应信息。其中一种分类法代表美国公认会计原则 (GAAP)。
 
-The SEC introduced voluntary XBRL filings in 2005 in response to accounting scandals before requiring this format for all filers since 2009 and continues to expand the mandatory coverage to other regulatory filings. The SEC maintains a website that lists the current taxonomies that shape the content of different filings and can be used to extract specific items.
+SEC 在 2005 年引入了自愿 XBRL 申报以应对会计丑闻，然后自 2009 年起要求所有申报者采用这种格式，并继续将强制性范围扩大到其他监管申报。 SEC 维护着一个网站，该网站列出了影响不同文件内容的当前分类法，可用于提取特定项目。
 
-There are several avenues to track and access fundamental data reported to the SEC:
-- As part of the [EDGAR Public Dissemination Service]((https://www.sec.gov/oit/announcement/public-dissemination-service-system-contact.html)) (PDS), electronic feeds of accepted filings are available for a fee. 
-- The SEC updates [RSS feeds](https://www.sec.gov/structureddata/rss-feeds-submitted-filings) every 10 minutes, which list structured disclosure submissions.
-- There are public [index files](https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm) for the retrieval of all filings through FTP for automated processing.
-- The financial statement (and notes) datasets contain parsed XBRL data from all financial statements and the accompanying notes.
+有几种途径可以跟踪和访问向美国证券交易委员会报告的基本数据：
+- 作为 [EDGAR 公共传播服务]((https://www.sec.gov/oit/announcement/public-dissemination-service-system-contact.html)) (PDS) 的一部分，接受的文件的电子提要是收费。
+- SEC 每 10 分钟更新一次 [RSS 提要](https://www.sec.gov/structureddata/rss-feeds-submitted-filings)，其中列出了结构化披露提交。
+- 有公共[索引文件](https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm) 用于通过 FTP 检索所有文件以进行自动处理。
+- 财务报表（和附注）数据集包含来自所有财务报表和附注的经过解析的 XBRL 数据。
 
-The SEC also publishes log files containing the [internet search traffic](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) for EDGAR filings through SEC.gov, albeit with a six-month delay.
-
-
-#### Building a fundamental data time series
-
-The scope of the data in the [Financial Statement and Notes](https://www.sec.gov/dera/data/financial-statement-and-notes-data-set.html) datasets consists of numeric data extracted from the primary financial statements (Balance sheet, income statement, cash flows, changes in equity, and comprehensive income) and footnotes on those statements. The data is available as early as 2009.
+SEC 还通过 SEC.gov 发布包含 EDGAR 文件的 [互联网搜索流量](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) 的日志文件，尽管六个月的延迟。
 
 
-The folder [03_sec_edgar](03_sec_edgar) contains the notebook [edgar_xbrl](03_sec_edgar/edgar_xbrl.ipynb) to download and parse EDGAR data in XBRL format, and create fundamental metrics like the P/E ratio by combining financial statement and price data.
+#### 构建基本数据时间序列
 
-### Other fundamental data sources
+[财务报表和注释](https://www.sec.gov/dera/data/financial-statement-and-notes-data-set.html) 数据集中的数据范围包括从主要财务报表（资产负债表、损益表、现金流量、权益变动和综合收益）以及这些报表的脚注。最早可获得 2009 年的数据。
 
-- [Compilation of macro resources by the Yale Law School](https://library.law.yale.edu/news/75-sources-economic-data-statistics-reports-and-commentary)
-- [Capital IQ](www.capitaliq.com)
+
+文件夹 [03_sec_edgar](03_sec_edgar) 包含笔记本 [edgar_xbrl](03_sec_edgar/edgar_xbrl.ipynb)，用于下载和解析 XBRL 格式的 EDGAR 数据，并通过结合财务报表和价格数据创建市盈率等基本指标。
+
+### 其他基础数据源
+
+- [耶鲁法学院宏观资源汇编](https://library.law.yale.edu/news/75-sources-economic-data-statistics-reports-and-commentary)
+- [资本智商](www.capitaliq.com)
 - [Compustat](www.compustat.com)
 - [MSCI Barra](www.mscibarra.com)
-- [Northfield Information Services](www.northinfo.com)
-- [Quantitative Services Group](www.qsg.com)
+- [诺斯菲尔德信息服务](www.northinfo.com)
+- [量化服务组](www.qsg.com)

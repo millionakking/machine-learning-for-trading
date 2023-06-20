@@ -1,76 +1,76 @@
-# Financial Feature Engineering: How to research Alpha Factors
+# 金融特征工程：如何研究 Alpha 因子
 
-Algorithmic trading strategies are driven by signals that indicate when to buy or sell assets to generate superior returns relative to a benchmark such as an index. The portion of an asset's return that is not explained by exposure to this benchmark is called alpha, and hence the signals that aim to produce such uncorrelated returns are also called alpha factors.
+算法交易策略由指示何时买入或卖出资产以产生相对于基准（例如指数）的更高回报的信号驱动。资产回报中高于该基准的部分称为 alpha，因此旨在产生此类高出基准收益的信号也称为 alpha 因子。
 
-If you are already familiar with ML, you may know that feature engineering is a key ingredient for successful predictions. This is no different in trading. Investment, however, is particularly rich in decades of research into how markets work and which features may work better than others to explain or predict price movements as a result. This chapter provides an overview as a starting point for your own search for alpha factors.
+如果您已经熟悉 ML，您可能知道特征工程是成功预测的关键因素。这在交易中没有什么不同。然而，在对市场如何运作以及哪些特征可能比其他特征更有效地解释或预测价格变动的数十年研究中，投资尤其丰富。本章提供了一个概述，作为您自己搜索 alpha 因子的起点。
 
-This chapter also presents key tools that facilitate the computing and testing alpha factors. We will highlight how the NumPy, pandas and TA-Lib libraries facilitate the manipulation of data and present popular smoothing techniques like the wavelets and the Kalman filter that help reduce noise in data.
+本章还介绍了有助于计算和测试 alpha 因子的关键工具。我们将重点介绍 NumPy、pandas 和 TA-Lib 库如何促进数据处理，并介绍流行的平滑技术，例如小波和卡尔曼滤波器，它们有助于减少数据中的噪声。
 
-We also preview how you can use the trading simulator Zipline to evaluate the predictive performance of (traditional) alpha factors. We discuss key alpha factor metrics like the information coefficient and factor turnover. An in-depth introduction to backtesting trading strategies that use machine learning follows in [Chapter 6](../08_ml4t_workflow), which covers the **ML4T workflow** that we will use throughout the book to evaluate trading strategies. 
+我们还预览了如何使用交易模拟器 Zipline 来评估（传统）阿尔法因子的预测性能。我们讨论了关键的 alpha 因子指标，例如信息系数和因子周转率。 [第 6 章](../08_ml4t_workflow) 对使用机器学习的回测交易策略进行了深入介绍，其中涵盖了我们将在整本书中用来评估交易策略的 **ML4T 工作流程**。
 
-Please see the [Appendix - Alpha Factor Library](../24_alpha_factor_library) for additional material on this topic, including numerous code examples that compute a broad range of alpha factors.
+请参阅[附录 - Alpha 因子库](../24_alpha_factor_library) 以获取有关此主题的其他材料，包括计算各种 alpha 因子的大量代码示例。
 
-## Content
+## 内容
 
-1. [Alpha Factors in practice: from data to signals](#alpha-factors-in-practice-from-data-to-signals)
-2. [Building on Decades of Factor Research](#building-on-decades-of-factor-research)
-    * [References](#references)
-3. [Engineering alpha factors that predict returns](#engineering-alpha-factors-that-predict-returns)
-    * [Code Example: How to engineer factors using pandas and NumPy](#code-example-how-to-engineer-factors-using-pandas-and-numpy)
-    * [Code Example: How to use TA-Lib to create technical alpha factors](#code-example-how-to-use-ta-lib-to-create-technical-alpha-factors)
-    * [Code Example: How to denoise your Alpha Factors with the Kalman Filter](#code-example-how-to-denoise-your-alpha-factors-with-the-kalman-filter)
-    * [Code Example: How to preprocess your noisy signals using Wavelets](#code-example-how-to-preprocess-your-noisy-signals-using-wavelets)
-    * [Resources](#resources)
-4. [From signals to trades: backtesting with `Zipline`](#from-signals-to-trades-backtesting-with-zipline)
-    * [Code Example: How to use Zipline to backtest a single-factor strategy](#code-example-how-to-use-zipline-to-backtest-a-single-factor-strategy)
-    * [Code Example: Combining factors from diverse data sources on the Quantopian platform](#code-example-combining-factors-from-diverse-data-sources-on-the-quantopian-platform)
-    * [Code Example: Separating signal and noise – how to use alphalens](#code-example-separating-signal-and-noise--how-to-use-alphalens)
-5. [Alternative Algorithmic Trading Libraries and Platforms](#alternative-algorithmic-trading-libraries-and-platforms)
+1. [实践中的 Alpha 因子：从数据到信号](#alpha-factors-in-practice-from-data-to-signals)
+2. [基于数十年的因素研究](#building-on-decades-of-factor-research)
+    * [参考文献](#references)
+3. [预测回报的工程 alpha 因子](#engineering-alpha-factors-that-predict-returns)
+    * [代码示例：如何使用 pandas 和 NumPy 设计因子](#code-example-how-to-engineer-factors-using-pandas-and-numpy)
+    * [代码示例：如何使用 TA-Lib 创建技术 alpha 因子](#code-example-how-to-use-ta-lib-to-create-technical-alpha-factors)
+    * [代码示例：如何使用卡尔曼滤波器对您的阿尔法因子进行降噪](#code-example-how-to-denoise-your-alpha-factors-with-the-kalman-filter)
+    * [代码示例：如何使用小波预处理噪声信号](#code-example-how-to-preprocess-your-noisy-signals-using-wavelets)
+    * [资源](#resources)
+4. [从信号到交易：使用 `Zipline` 进行回测](#from-signals-to-trades-backtesting-with-zipline)
+    * [代码示例：如何使用 Zipline 回测单因素策略](#code-example-how-to-use-zipline-to-backtest-a-single-factor-strategy)
+    * [代码示例：在 Quantopian 平台上组合来自不同数据源的因素](#code-example-combining-factors-from-diverse-data-sources-on-the-quantopian-platform)
+    * [代码示例：分离信号和噪声 – 如何使用 alphalens](#code-example-separating-signal-and-noise--how-to-use-alphalens)
+5. [替代算法交易库和平台](#alternative-algorithmic-trading-libraries-and-platforms)
 
-## Alpha Factors in practice: from data to signals
+## Alpha 因素在实践中：从数据到信号
 
-Alpha factors are transformations of market, fundamental, and alternative data that contain predictive signals. They are designed to capture risks that drive asset returns. One set of factors describes fundamental, economy-wide variables such as growth, inflation, volatility, productivity, and demographic risk. Another set consists of tradeable investment styles such as the market portfolio, value-growth investing, and momentum investing.
+Alpha 因素是包含预测信号的市场、基本面和替代数据的转换。它们旨在捕捉驱动资产回报的风险。一组因素描述了经济范围内的基本变量，例如增长、通货膨胀、波动性、生产率和人口风险。另一组包括可交易的投资风格，例如市场投资组合、价值增长投资和动量投资。
 
-There are also factors that explain price movements based on the economics or institutional setting of financial markets, or investor behavior, including known biases of this behavior. The economic theory behind factors can be rational, where the factors have high returns over the long run to compensate for their low returns during bad times, or behavioral, where factor risk premiums result from the possibly biased, or not entirely rational behavior of agents that is not arbitraged away.
+还有一些因素可以解释基于经济或金融市场制度设置或投资者行为的价格变动，包括这种行为的已知偏见。因子背后的经济理论可以是理性的，即因子在长期内具有高回报以补偿它们在经济不景气时的低回报，也可以是行为的，即因子风险溢价可能是由于代理人可能有偏见或不完全理性的行为而产生的没有被套利掉。
 
-## Building on Decades of Factor Research
+## 基于数十年的因素研究
 
-In an idealized world, categories of risk factors should be independent of each other (orthogonal), yield positive risk premia, and form a complete set that spans all dimensions of risk and explains the systematic risks for assets in a given class. In practice, these requirements will hold only approximately.
+在理想化的世界中，风险因素类别应该相互独立（正交），产生正风险溢价，并形成一个涵盖所有风险维度的完整集合，并解释给定类别资产的系统风险。实际上，这些要求将仅近似成立。
 
-### References
+### 参考
 
-- [Dissecting Anomalies](http://schwert.ssb.rochester.edu/f532/ff_JF08.pdf) by Eugene Fama and Ken French (2008)
-- [Explaining Stock Returns: A Literature Review](https://www.ifa.com/pdfs/explainingstockreturns.pdf) by James L. Davis (2001)
-- [Market Efficiency, Long-Term Returns, and Behavioral Finance](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=15108) by Eugene Fama (1997)
-- [The Efficient Market Hypothesis and It's Critics](https://pubs.aeaweb.org/doi/pdf/10.1257/089533003321164958) by Burton Malkiel (2003)
-- [The New Palgrave Dictionary of Economics](https://www.palgrave.com/us/book/9780333786765) (2008) by Steven Durlauf and Lawrence Blume, 2nd ed.
-- [Anomalies and Market Efficiency](https://www.nber.org/papers/w9277.pdf) by G. William Schwert25 (Ch. 15 in Handbook of the- "Economics of Finance", by Constantinides, Harris, and Stulz, 2003)
-- [Investor Psychology and Asset Pricing](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=265132), by David Hirshleifer (2001)
-- [Practical advice for analysis of large, complex data sets](https://www.unofficialgoogledatascience.com/2016/10/practical-advice-for-analysis-of-large.html), Patrick Riley, Unofficial Google Data Science Blog
+- [解剖异常](http://schwert.ssb.rochester.edu/f532/ff_JF08.pdf) 作者：Eugene Fama 和 Ken French (2008)
+- [解释股票收益：文献综述](https://www.ifa.com/pdfs/explainingstockreturns.pdf)，James L. Davis (2001)
+- [市场效率、长期回报和行为金融学](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=15108)，Eugene Fama（1997 年）
+- [有效市场假说及其批评者](https://pubs.aeaweb.org/doi/pdf/10.1257/089533003321164958)，Burton Malkiel (2003)
+- [The New Palgrave Dictionary of Economics](https://www.palgrave.com/us/book/9780333786765)（2008 年），作者 Steven Durlauf 和 Lawrence Blume，第 2 版。
+- [异常与市场效率](https://www.nber.org/papers/w9277.pdf)，作者 G. William Schwert25（《金融经济学手册》第 15 章，作者：Constantinides、Harris 和施图尔茨，2003）
+- [投资者心理与资产定价](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=265132)，David Hirshleifer (2001)
+- [分析大型复杂数据集的实用建议](https://www.unofficialgoogledatascience.com/2016/10/practical-advice-for-analysis-of-large.html)，Patrick Riley，非官方谷歌数据科学博客
 
-## Engineering alpha factors that predict returns
+## 预测回报的工程 alpha 因素
 
-Based on a conceptual understanding of key factor categories, their rationale and popular metrics, a key task is to identify new factors that may better capture the risks embodied by the return drivers laid out previously, or to find new ones. In either case, it will be important to compare the performance of innovative factors to that of known factors to identify incremental signal gains.
+基于对关键因素类别、它们的基本原理和流行指标的概念性理解，一项关键任务是确定新因素，这些新因素可以更好地捕捉先前列出的回报驱动因素所体现的风险，或者寻找新的因素。在任何一种情况下，重要的是将创新因素的性能与已知因素的性能进行比较，以确定增量信号增益。
 
-### Code Example: How to engineer factors using pandas and NumPy
+### 代码示例：如何使用 pandas 和 NumPy 设计因子
 
-The notebook [feature_engineering.ipynb](00_data/feature_engineering.ipynb) in the [data](00_data) directory illustrates how to engineer basic factors.
+[data](00_data) 目录中的笔记本 [feature_engineering.ipynb](00_data/feature_engineering.ipynb) 说明了如何设计基本因素。
 
-### Code Example: How to use TA-Lib to create technical alpha factors
+### 代码示例：如何使用 TA-Lib 创建技术 alpha 因子
 
-The notebook [how_to_use_talib](02_how_to_use_talib.ipynb) illustrates the usage of TA-Lib, which includes a broad range of common technical indicators. These indicators have in common that they only use market data, i.e., price and volume information.
+笔记本 [how_to_use_talib](02_how_to_use_talib.ipynb) 说明了 TA-Lib 的用法，其中包括广泛的常用技术指标。这些指标的共同点是它们仅使用市场数据，即价格和数量信息。
 
-The notebook [common_alpha_factors](../24_alpha_factor_library/02_common_alpha_factors.ipynb) in th **appendix** contains dozens of additional examples.  
+**附录**中的笔记本 [common_alpha_factors](../24_alpha_factor_library/02_common_alpha_factors.ipynb) 包含许多其他示例。
 
-### Code Example: How to denoise your Alpha Factors with the Kalman Filter
+### 代码示例：如何使用卡尔曼滤波器对 Alpha 因子进行降噪
 
-The notebook [kalman_filter_and_wavelets](03_kalman_filter_and_wavelets.ipynb) demonstrates the use of the Kalman filter using the `PyKalman` package for smoothing; we will also use it in [Chapter 9](../09_time_series_models) when we develop a pairs trading strategy.
+笔记本 [kalman_filter_and_wavelets](03_kalman_filter_and_wavelets.ipynb) 演示了使用“PyKalman”包进行平滑的卡尔曼滤波器的使用；我们还将在[第 9 章](../09_time_series_models) 开发配对交易策略时使用它。
 
-### Code Example: How to preprocess your noisy signals using Wavelets
+### 代码示例：如何使用小波预处理噪声信号
 
-The notebook [kalman_filter_and_wavelets](03_kalman_filter_and_wavelets.ipynb) also demonstrates how to work with wavelets using the `PyWavelets` package.
+笔记本 [kalman_filter_and_wavelets](03_kalman_filter_and_wavelets.ipynb) 还演示了如何使用“PyWavelets”包处理小波。
 
-### Resources
+### 资源
 
 - [Fama French](https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html) Data Library
 - [numpy](https://numpy.org/) website
@@ -95,39 +95,39 @@ The notebook [kalman_filter_and_wavelets](03_kalman_filter_and_wavelets.ipynb) a
 - [Quantitative Equity Portfolio Management: Modern Techniques and Applications](https://www.crcpress.com/Quantitative-Equity-Portfolio-Management-Modern-Techniques-and-Applications/Qian-Hua-Sorensen/p/book/9781584885580) by Edward Qian, Ronald Hua, and Eric Sorensen
 - [Spearman Rank Correlation](https://statistics.laerd.com/statistical-guides/spearmans-rank-order-correlation-statistical-guide.php)
 
-## From signals to trades: backtesting with `Zipline`
+## 从信号到交易：使用 `Zipline` 进行回测
 
-The open source [zipline](https://zipline.ml4trading.io/index.html) library is an event-driven backtesting system maintained and used in production by the crowd-sourced quantitative investment fund [Quantopian](https://www.quantopian.com/) to facilitate algorithm-development and live-trading. It automates the algorithm's reaction to trade events and provides it with current and historical point-in-time data that avoids look-ahead bias.
+开源[zipline](https://zipline.ml4trading.io/index.html)库是由众包量化投资基金[Quantopian](https:// www.quantopian.com/) 以促进算法开发和实时交易。它使算法对交易事件的反应自动化，并为其提供当前和历史时间点数据，避免前瞻性偏差。
 
-- [Chapter 8](../08_ml4t_workflow) contains a more comprehensive introduction to Zipline.
-- Please follow the [instructions](../installation) in the `installation` folder, including to address **know issues**.
+- [第 8 章](../08_ml4t_workflow) 包含对 Zipline 的更全面介绍。
+- 请按照 `installation` 文件夹中的 [instructions](../installation) 进行操作，包括解决**已知问题**。
 
-### Code Example: How to use Zipline to backtest a single-factor strategy
+### 代码示例：如何使用 Zipline 回测单因素策略
 
-The notebook [single_factor_zipline](04_single_factor_zipline.ipynb) develops and test a simple mean-reversion factor that measures how much recent performance has deviated from the historical average. Short-term reversal is a common strategy that takes advantage of the weakly predictive pattern that stock price increases are likely to mean-revert back down over horizons from less than a minute to one month.
+notebook [single_factor_zipline](04_single_factor_zipline.ipynb) 开发并测试了一个简单的均值回归因子，用于衡量近期表现偏离历史平均水平的程度。短期反转是一种常见的策略，它利用了弱预测模式，即股价上涨可能会在不到一分钟到一个月的时间范围内均值回落。
 
-### Code Example: Combining factors from diverse data sources on the Quantopian platform
+### 代码示例：在 Quantopian 平台上结合来自不同数据源的因素
 
-The Quantopian research environment is tailored to the rapid testing of predictive alpha factors. The process is very similar because it builds on `zipline`, but offers much richer access to data sources. 
+Quantopian 研究环境专为预测性 alpha 因子的快速测试而量身定制。这个过程非常相似，因为它建立在 `zipline` 之上，但提供了更丰富的数据源访问。
 
-The notebook [multiple_factors_quantopian_research](05_multiple_factors_quantopian_research.ipynb) illustrates how to compute alpha factors not only from market data as previously but also from fundamental and alternative data.
+笔记本 [multiple_factors_quantopian_research](05_multiple_factors_quantopian_research.ipynb) 说明了如何不仅像以前那样从市场数据中计算 alpha 因子，而且还从基本面和替代数据中计算 alpha 因子。
     
-### Code Example: Separating signal and noise – how to use alphalens
+### 代码示例：分离信号和噪声——如何使用 alphalens
 
-The notebook [performance_eval_alphalens](06_performance_eval_alphalens.ipynb) introduces the [alphalens](http://quantopian.github.io/alphalens/) library for the performance analysis of predictive (alpha) factors, open-sourced by Quantopian. It demonstrates how it integrates with the backtesting library `zipline` and the portfolio performance and risk analysis library `pyfolio` that we will explore in the next chapter.
+笔记本 [performance_eval_alphalens](06_performance_eval_alphalens.ipynb) 介绍了用于预测 (alpha) 因素性能分析的 [alphalens](http://quantopian.github.io/alphalens/) 库，由 Quantopian 开源。它演示了它如何与我们将在下一章探讨的回测库 `zipline` 和投资组合绩效和风险分析库 `pyfolio` 集成。
 
-`alphalens` facilitates the analysis of the predictive power of alpha factors concerning the:
-- Correlation of the signals with subsequent returns
-- Profitability of an equal or factor-weighted portfolio based on a (subset of) the signals
-- Turnover of factors to indicate the potential trading costs
-- Factor-performance during specific events
-- Breakdowns of the preceding by sector
+`alphalens` 有助于分析有关以下方面的 alpha 因素的预测能力：
+- 信号与后续回报的相关性
+- 基于信号（子集）的相等或因子加权投资组合的盈利能力
+- 换手率表明潜在的交易成本
+- 特定事件期间的因素表现
+- 按行业划分的上述细目
 
-The analysis can be conducted using `tearsheets` or individual computations and plots. The tearsheets are illustrated in the online repo to save some space.
+可以使用“tearsheets”或单独的计算和绘图进行分析。在线存储库中对撕样进行了说明，以节省一些空间。
 
-- See [here](https://github.com/quantopian/alphalens/blob/master/alphalens/examples/alphalens_tutorial_on_quantopian.ipynb) for a detailed `alphalens` tutorial by Quantopian
+- 请参阅[此处](https://github.com/quantopian/alphalens/blob/master/alphalens/examples/alphalens_tutorial_on_quantopian.ipynb)，了解 Quantopian 的详细“alphalens”教程
 
-## Alternative Algorithmic Trading Libraries and Platforms
+## 替代算法交易库和平台
 
 - [QuantConnect](https://www.quantconnect.com/)
 - [Alpha Trading Labs](https://www.alphalabshft.com/)

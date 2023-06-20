@@ -1,33 +1,33 @@
-## Scraping OpenTable data
+## 抓取 OpenTable 数据
 
-Typical sources of alternative data are review websites such as Glassdoor or Yelp that convey insider insights using employee comments or guest reviews. This data provides valuable input for ML models that aim to predict a business' prospects or directly its market value to obtain trading signals.
+替代数据的典型来源是评论网站，如 Glassdoor 或 Yelp，它们使用员工评论或客人评论传达内部见解。这些数据为 ML 模型提供了有价值的输入，这些模型旨在预测企业的前景或直接预测其市场价值以获得交易信号。
 
-The data needs to be extracted from the HTML source, barring any legal obstacles. To illustrate the web scraping tools that Python offers, we'll retrieve information on restaurant bookings from OpenTable. Data of this nature could be used to forecast economic activity by geography, real estate prices, or restaurant chain revenues.
+数据需要从 HTML 源中提取，排除任何法律障碍。为了说明 Python 提供的 Web 抓取工具，我们将从 OpenTable 检索有关餐厅预订的信息。这种性质的数据可用于按地理、房地产价格或连锁餐厅收入来预测经济活动。
 
-### Building a dataset of restaurant bookings
+### 构建餐厅预订数据集
 
-> Note: different from all other examples, the code that uses Selenium is written to run on a host rather than using the Docker image because it relies on a browser. The code has been tested on Ubuntu and Mac only.
+> 注意：与所有其他示例不同，使用 Selenium 的代码被编写为在主机上运行，​​而不是使用 Docker 映像，因为它依赖于浏览器。该代码仅在 Ubuntu 和 Mac 上进行了测试。
 
-With the browser automation tool [Selenium](https://www.seleniumhq.org/), you can follow the links to the next pages and quickly build a dataset of over 10,000 restaurants in NYC that you could then update periodically to track a time series.
+使用浏览器自动化工具 [Selenium](https://www.seleniumhq.org/)，您可以快速构建纽约市 10,000 多家餐馆的数据集，然后您可以定期更新该数据集以跟踪时间序列。
 
-To set up selenium, run 
+要设置 Selenium，请运行
 ```bash
 ./selenium_setup.sh
 ```
-with suitable permission, i.e., after running `chmod +x selenium_setup.sh`.
+具有适当的权限，即在运行 `chmod+x selenium_setup.sh` 之后。
 
-The script [opentable_selenium](opentable_selenium.py) illustrates how to scrape and store the data. Simply run as 
+脚本 [opentable_selenium] (opentable_selenium.py) 说明了如何抓取和存储数据。只需运行下列指令
 ```python
 python opentable_selenium.py
 ```
 
-Since websites change frequently, this code may stop working at any moment.
+由于网站经常更改，此代码随时可能不能用。
 
-### One step further – Scrapy and splash
+### 更进一步——Scrapy 和 splash
 
-Scrapy is a powerful library to build bots that follow links, retrieve the content, and store the parsed result in a structured way. In combination with the headless browser splash, it can also interpret JavaScript and becomes an efficient alternative to Selenium. 
+Scrapy 是一个强大的库，用于构建跟踪链接、检索内容并以结构化方式存储解析结果的机器人。结合 headless browser splash，它还可以解释 JavaScript，成为 Selenium 的高效替代品。
 
-You can run the spider using the `scrapy crawl opentable` command in the 01_opentable directory where the results are logged to spider.log.
+您可以在 01_opentable 目录中使用 `scrapy crawl opentable` 命令运行爬虫，结果将记录到 spider.log。
 
 
 

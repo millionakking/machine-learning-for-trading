@@ -72,7 +72,7 @@ conda install -n base -c conda-forge mamba
 使用笔记本中使用的最新版本库创建[虚拟环境](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html) (自 2021 年 4 月起），您只需从克隆存储库根目录中的命令行运行以下选项之一（取决于您的操作系统）：
 
 ```bash
-conda env create -n ml4t python=3.8
+conda env create --name ml4t python=3.8
 mamba env update -n ml4t -f installation/windows/ml4t.yml 
 mamba env update -n ml4t -f installation/macosx/ml4t.yml # deprecated; use ml4t-base.yml
 mamba env update -n ml4t -f installation/linux/ml4t.yml 

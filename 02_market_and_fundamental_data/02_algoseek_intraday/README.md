@@ -1,21 +1,22 @@
-# How to process AlgoSeek intraday NASDAQ 100 data
+# 如何处理AlgoSeek盘中纳斯达克100数据
 
-You can download a sammle of Algoseek's NASDAQ100 Minute Bar data with Trade & Quote information for 2015-2017 from Algoseek's website [here](https://www.algoseek.com/ml4t-book-data.html). The notebook [algoseek_minute_data](1_algoseek_minute_data.ipynb) contains the code to extract and combine the data that we will use in [Chapter 12](../../12_gradient_boosting_machines) to develop a Gradient Boosting model that predicts one-minute returns for an intraday trading strategy.   
+您可以从 Algoseek 的网站 [此处](https://www.algoseek.com/ml4t-book-data.html) 下载 2015-2017 年 Algoseek 纳斯达克 100 分钟柱数据样本和交易报价信息。 notebook [algoseek_minute_data](1_algoseek_minute_data.ipynb) 包含用于提取和组合数据的代码，我们将在 [第 12 章](../../12_gradient_boosting_machines) 中使用这些数据来开发预测一分钟回报的梯度提升模型日内交易策略。
 
-Unzip the directory, rename it `1min_taq`, and move it into a new `nasdaq100` folder in the [data](../../data) directory. It contains around 5GB worth of NASDAQ 100 minute bar data in trade-and-quote format. See [documentation](https://us-equity-market-data-docs.s3.amazonaws.com/algoseek.US.Equity.TAQ.Minute.Bars.pdf) for details on the definition of the numerous fields.
-The following information is from the Algoseek Trade & Quote Minute Bar data linked above. 
+解压缩目录，将其重命名为“1min_taq”，并将其移动到 [data](../../data) 目录中的新“nasdaq100”文件夹中。它以交易报价格式包含大约 5GB 的纳斯达克 100 分钟柱数据。有关众多字段定义的详细信息，请参阅[文档](https://us-equity-market-data-docs.s3.amazonaws.com/algoseek.US.Equity.TAQ.Minute.Bars.pdf)。
+以下信息来自上面链接页面中的 Algoseek Trade & Quote Minute Bar 数据。
 
-## Trade & Quote Minute Bar Fields
+## 交易和报价分钟栏字段
 
-The Quote fields are based on changes to the NBBO ([National Best Bid Offer](https://www.investopedia.com/terms/n/nbbo.asp)) from the top-of-book price and size from  each of the exchanges.
+报价字段基于对 NBBO（[全国最佳出价报价](https://www.investopedia.com/terms/n/nbbo.asp)）的更改交流。
 
-The enhanced Trade & Quote bar fields include the following fields:
-- **Field**: Name of Field.
-- **Q / T**: Field based on Quotes or Trades
-- **Type**: Field format
-- **No Value**: Value of field when there is no value or data. 
-  - Note: “Never” means field should always have a value EXCEPT for the first bar of the day.
-- **Description**: Description of the field.
+增强的交易和报价栏字段包括以下字段：
+- **Field**: 字段名称。
+- **Q / T**: 基于报价或交易的字段
+- **Type**: 字段格式
+- **No Value**: 没有值或数据时字段的值。
+  - 注意：“从不”表示该字段应始终具有除当天第一个柱之外的值。
+- **Description**: 字段说明。
+
 
 | id  | Field                   | Q/T  | Type                          |  No Value | Description                                                                                                                                                                                                         |
 |:---:|-------------------------|:----:|-------------------------------|:---------:|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -74,40 +75,41 @@ The enhanced Trade & Quote bar fields include the following fields:
 | 53  | `RepeatDowntickVolume`  | T    | Integer                       | 0         | Total number of shares where trade price is the same (repeated) and last price change was down during bar. <br/>Repeat downtick = ( trade price == last trade price ) & (last tick direction == down )                                                                                                                                   |
 | 54  | `UnknownVolume`         | T    | Integer                       | 0         | When the first trade of the day takes place, the tick direction is “unknown” as there is no previous Trade to compare it to.<br/>This field is the volume of the first trade after 4am and acts as an initiation value for the tick volume directions.<br/>In future this bar will be renamed to `UnkownTickDirectionVolume` .  |
 
-### Notes
+### 笔记
 
 **Empty Fields**
 
-An empty field has no value and is “Blank” , for example FirstTradeTime and there are no trades during the bar period. 
-The field `Volume` measuring total number of shares traded in bar will be `0` if there are no Trades (see `No Value` column above for each field).
+空字段没有值并且是“空白”，例如 FirstTradeTime 并且在柱期间没有交易。
+如果没有交易，则衡量栏中交易的股票总数的“Volume”字段将为“0”（每个字段请参见上面的“No Value”列）。
 
 **No Bid/Ask/Trade OHLC**
 
-During a bar timeframe there may not be a change in the NBBO or an actual Trade. 
-For example, there can be a bar with OHLC Bid/Ask but no Trade OHLC.
+在柱线时间范围内，NBBO 或实际交易可能不会发生变化。
+例如，可以有一个带有 OHLC 出价/询价但没有交易 OHLC 的柱。
 
 **Single Event**
 
-For bars with only one trade, one NBBO bid or one NBBO ask then Open/High/Low/Close price,size andtime will be the same.
+对于只有一笔交易的柱，如一个 NBBO 买价或一个 NBBO 卖价，他们的开盘价/最高价/最低价/收盘价，大小和时间将相同。
 
 **`AskPriceAtHighBidPrice`, `AskSizeAtHighBidPrice`, `AskPriceAtLowBidPrice`, `AskSizeAtLowBidPrice` Fields** 
 
-To provide consistent Bid/Ask prices at a point in time while showing the low/high Bid/Ask for the bar, AlgoSeek uses the low/high `Bid` and the corresponding `Ask` at that price.
+为了在某​​个时间点提供一致的买价/卖价，同时显示柱的低/高买价/卖价，AlgoSeek 使用低/高“买价”和该价格的相应“卖价”。
 
-## FAQ
+### 常问问题
 
-**Why are Trade Prices often inside the Bid Price to Ask Price range?**
+**为什么交易价格经常在买入价到卖出价范围内？**
 
-The Low/High Bid/Ask is the low and high NBBO price for the bar range. 
+Low/High Bid/Ask 是 NBBO 的低价和高价。
+通常情况下，交易可能不会以这些价格发生，因为价格可能只持续几秒钟，或者是因为刚好在隐藏订单交易中发生交易的过程中又或者是由于发生在‘出价’/’询价‘进行的价格优化过程中
 Very often a Trade may not occur at these prices as the price may only last a few seconds or executions are being crossed at mid-point due to hidden order types that execute at mid-point or as price improvement over current `Bid`/`Ask`.
 
-**How to get exchange tradable shares?** 
+**如何获得交易所流通股？**
 
-To get the exchange tradable volume in a bar subtract `Volume` from `FinraVolume`. 
-- `Volume` is the total number of shares traded. 
-- ``FinraVolume`` is the total number of shares traded that are reported as executions by FINRA. 
+要获得柱中的交易所可交易量，请从 FinraVolume 中减去 Volume。
+- `Volume` 是交易的股票总数。
+- ``FinraVolume`` 是被 FINRA 报告为执行的交易股票总数。
 
-When a trade is done that is off the listed exchanges, it must be reported to FINRA by the brokerage firm or dark pool. Examples include: 
-- internal crosses by broker dealer
-- over-the-counter block trades, and
-- dark pool executions.
+当在上市交易所之外进行交易时，经纪公司或暗池必须向 FINRA 报告。例子包括：
+- 经纪交易商的内部交叉
+- 场外大宗交易，以及
+- 暗池交易。

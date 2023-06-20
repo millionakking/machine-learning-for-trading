@@ -1,162 +1,162 @@
-# Market & Fundamental Data: Sources and Techniques
+# 市场和基本面数据：来源和技术
 
-Data has always been an essential driver of trading, and traders have long made efforts to gain an advantage from access to superior information. These efforts date back at least to the rumors that the House of Rothschild benefited handsomely from bond purchases upon advance news about the British victory at Waterloo carried by pigeons across the channel.
+数据一直是交易的重要驱动力，交易员长期以来一直努力通过获取优质信息来获得优势。这些努力至少可以追溯到谣言，即罗斯柴尔德家族根据鸽子携带英国在滑铁卢取得胜利的预先消息从债券购买中获得了丰厚的收益。
 
-Today, investments in faster data access take the shape of the Go West consortium of leading **high-frequency trading** (HFT) firms that connects the Chicago Mercantile Exchange (CME) with Tokyo. The round-trip latency between the CME and the BATS exchanges in New York has dropped to close to the theoretical limit of eight milliseconds as traders compete to exploit arbitrage opportunities. At the same time, regulators and exchanges have started to introduce speed bumps that slow down trading to limit the adverse effects on competition of uneven access to information.
+如今，对更快数据访问的投资以领先的**高频交易** (HFT) 公司组成的 Go West 财团的形式出现，该财团将芝加哥商品交易所 (CME) 与东京连接起来。随着交易员竞相利用套利机会，CME 和纽约 BATS 交易所之间的往返延迟已降至接近 8 毫秒的理论极限。与此同时，监管机构和交易所已经开始引入减速带来减缓交易，以限制信息获取不均对竞争的不利影响。
 
-Traditionally, investors mostly relied on **publicly available market and fundamental data**.  Efforts to create or acquire private datasets, for example through proprietary surveys, were limited. Conventional strategies focus on equity fundamentals and build financial models on reported financials, possibly combined with industry or macro data to project earnings per share and stock prices. Alternatively, they leverage technical analysis to extract signals from market data using indicators computed from price and volume information.
+传统上，投资者主要依赖**公开的市场和基本面数据**。创建或获取私有数据集（例如通过专有调查）的努力是有限的。传统策略侧重于股票基本面并根据报告的财务数据建立财务模型，可能结合行业或宏观数据来预测每股收益和股票价格。或者，他们利用技术分析，使用根据价格和交易量信息计算出的指标从市场数据中提取信号。
 
-**Machine learning (ML) algorithms** promise to exploit market and fundamental data more efficiently than human-defined rules and heuristics, in particular when combined with alternative data, the topic of the next chapter. We will illustrate how to apply ML algorithms ranging from linear models to recurrent neural networks (RNNs) to market and fundamental data and generate tradeable signals.
+**机器学习 (ML) 算法** 有望比人类定义的规则和启发式方法更有效地利用市场和基本面数据，尤其是在与下一章的主题——替代数据相结合时。我们将说明如何将从线性模型到递归神经网络 (RNN) 的 ML 算法应用于市场和基本数据并生成可交易信号。
 
-This chapter introduces market and fundamental data sources and explains how they reflect the environment in which they are created. The details of the **trading environment** matter not only for the proper interpretation of market data but also for the design and execution of your strategy and the implementation of realistic backtesting simulations. We also illustrate how to access and work with trading and financial statement data from various sources using Python. 
+本章介绍市场和基本面数据来源，并解释它们如何反映产生它们的环境。 **交易环境**的细节不仅对市场数据的正确解释很重要，而且对您的策略的设计和执行以及现实回测模拟的实施也很重要。我们还说明了如何使用 Python 访问和处理来自各种来源的交易和财务报表数据。
  
-## Content
+## 内容
 
-1. [Market data reflects the trading environment](#market-data-reflects-the-trading-environment)
-    * [Market microstructure: The nuts and bolts of trading](#market-microstructure-the-nuts-and-bolts-of-trading)
-2. [Working with high-frequency market data](#working-with-high-frequency-market-data)
-    * [How to work with NASDAQ order book data](#how-to-work-with-nasdaq-order-book-data)
-    * [How trades are communicated: The FIX protocol](#how-trades-are-communicated-the-fix-protocol)
-    * [The NASDAQ TotalView-ITCH data feed](#the-nasdaq-totalview-itch-data-feed)
-        - [Code Example: Parsing and normalizing tick data ](#code-example-parsing-and-normalizing-tick-data-)
-        - [Additional Resources](#additional-resources)
-    * [AlgoSeek minute bars: Equity quote and trade data](#algoseek-minute-bars-equity-quote-and-trade-data)
-        - [From the consolidated feed to minute bars](#from-the-consolidated-feed-to-minute-bars)
-        - [Code Example: How to process AlgoSeek intraday data](#code-example-how-to-process-algoseek-intraday-data)
-3. [API Access to Market Data](#api-access-to-market-data)
-    * [Remote data access using pandas](#remote-data-access-using-pandas)
-    * [Code Examples](#code-examples)
-    * [Data sources](#data-sources)
-    * [Industry News](#industry-news)
-4. [How to work with Fundamental data](#how-to-work-with-fundamental-data)
-    * [Financial statement data](#financial-statement-data)
-    * [Automated processing using XBRL markup](#automated-processing-using-xbrl-markup)
-    * [Code Example: Building a fundamental data time series](#code-example-building-a-fundamental-data-time-series)
-    * [Other fundamental data sources](#other-fundamental-data-sources)
-5. [Efficient data storage with pandas](#efficient-data-storage-with-pandas)
-    * [Code Example](#code-example)
+1. [市场数据反映交易环境](#market-data-reflects-the-trading-environment)
+    * [市场微观结构：交易的具体细节](#market-microstructure-the-nuts-and-bolts-of-trading)
+2. [使用高频市场数据](#working-with-high-frequency-market-data)
+    * [如何使用纳斯达克订单簿数据](#how-to-work-with-nasdaq-order-book-data)
+    * [如何传达交易：FIX 协议](#how-trades-are-communicated-the-fix-protocol)
+    * [纳斯达克 TotalView-ITCH 数据提要](#the-nasdaq-totalview-itch-data-feed)
+        - [代码示例：解析和规范化刻度数据](#code-example-parsing-and-normalizing-tick-data-)
+        - [其他资源](#additional-resources)
+    * [AlgoSeek 分钟柱：股票报价和交易数据](#algoseek-minute-bars-equity-quote-and-trade-data)
+        - [从综合提要到分钟柱](#from-the-consolidated-feed-to-minute-bars)
+        - [代码示例：如何处理 AlgoSeek 盘中数据](#code-example-how-to-process-algoseek-intraday-data)
+3. [获取市场数据的API](#api-access-to-market-data)
+    * [使用 pandas 进行远程数据访问](#remote-data-access-using-pandas)
+    * [代码示例](#code-examples)
+    * [数据源](#data-sources)
+    * [行业新闻](#industry-news)
+4. [如何使用基础数据](#how-to-work-with-fundamental-data)
+    * [财务报表数据](#financial-statement-data)
+    * [使用 XBRL 标记的自动处理](#automated-processing-using-xbrl-markup)
+    * [代码示例：构建基本数据时间序列](#code-example-building-a-fundamental-data-time-series)
+    * [其他基本数据源](#other-fundamental-data-sources)
+5. [使用 pandas 进行高效数据存储](#efficient-data-storage-with-pandas)
+    * [代码示例](#code-example)
  
-## Market data reflects the trading environment
+## 市场数据反映交易环境
 
-Market data is the product of how traders place orders for a financial instrument directly or through intermediaries on one of the numerous marketplaces and how they are processed and how prices are set by matching demand and supply. As a result, the data reflects the institutional environment of trading venues, including the rules and regulations that govern orders, trade execution, and price formation. See [Harris](https://global.oup.com/ushe/product/trading-and-exchanges-9780195144703?cc=us&lang=en&) (2003) for a global overview and [Jones](https://www0.gsb.columbia.edu/faculty/cjones/papers/2018.08.31%20US%20Equity%20Market%20Data%20Paper.pdf) (2018) for details on the US market.
+市场数据是交易者如何直接或通过中介机构在众多市场之一上为金融工具下订单、如何处理这些订单以及如何通过匹配供需来设定价格的产物。因此，数据反映了交易场所的制度环境，包括管理订单、交易执行和价格形成的规章制度。有关全球概览，请参阅 [Harris](https://global.oup.com/ushe/product/trading-and-exchanges-9780195144703?cc=us&lang=en&) (2003) 和 [Jones](https://www0 .gsb.columbia.edu/faculty/cjones/papers/2018.08.31%20US%20Equity%20Market%20Data%20Paper.pdf) (2018) 有关美国市场的详细信息。
 
-Algorithmic traders use algorithms, including ML, to analyze the flow of buy and sell orders and the resulting volume and price statistics to extract trade signals that capture insights into, for example, demand-supply dynamics or the behavior of certain market participants. This section reviews institutional features that impact the simulation of a trading strategy during a backtest before we start working with actual tick data created by one such environment, namely the NASDAQ.
+算法交易者使用包括 ML 在内的算法来分析买卖订单的流动以及由此产生的交易量和价格统计数据，以提取交易信号，以捕捉对供需动态或某些市场参与者行为等方面的洞察。在我们开始使用由此类环境（即纳斯达克）创建的实际报价数据之前，本节回顾在回测期间影响交易策略模拟的机构特征。
 
-### Market microstructure: The nuts and bolts of trading
+### 市场微观结构：交易的具体细节
 
-Market microstructure studies how the institutional environment affects the trading process and shapes outcomes like the price discovery, bid-ask spreads and quotes, intraday trading behavior, and transaction costs. It is one of the fastest-growing fields of financial research, propelled by the rapid development of algorithmic and electronic trading.  
+市场微观结构研究制度环境如何影响交易过程并塑造价格发现、买卖差价和报价、日内交易行为和交易成本等结果。在算法和电子交易的快速发展的推动下，它是金融研究中发展最快的领域之一。
 
-Today, hedge funds sponsor in-house analysts to track the rapidly evolving, complex details and ensure execution at the best possible market prices and design strategies that exploit market frictions. This section provides a brief overview of key concepts, namely different market places and order types, before we dive into the data generated by trading.
+如今，对冲基金赞助内部分析师跟踪快速变化的复杂细节，确保以最佳市场价格执行，并设计利用市场摩擦的策略。在我们深入研究交易生成的数据之前，本节简要概述了关键概念，即不同的市场和订单类型。
 
-- [Trading and Exchanges - Market Microstructure for Practitioners](https://global.oup.com/ushe/product/trading-and-exchanges-9780195144703?cc=us&lang=en&), Larry Harris, Oxford University Press, 2003
-- [Understanding the Market for Us Equity Market Data](https://www0.gsb.columbia.edu/faculty/cjones/papers/2018.08.31%20US%20Equity%20Market%20Data%20Paper.pdf), Charles Jones, NYSE, 2018 
-- [World Federation of Exchanges](https://www.world-exchanges.org/our-work/statistics)
-- [Econophysics of Order-driven Markets](https://www.springer.com/gp/book/9788847017658), Abergel et al, 2011
-    - Presents the ideas and research from various communities (physicists, economists, mathematicians, financial engineers) on the  modelling and analyzing order-driven markets. Of primary interest in these studies are the mechanisms leading to the statistical regularities of price statistics. Results pertaining to other important issues such as market impact, the profitability of trading strategies, or mathematical models for microstructure effects, are also presented.
+- [交易和交易 - 从业者的市场微观结构](https://global.oup.com/ushe/product/trading-and-exchanges-9780195144703?cc=us&lang=en&)，Larry Harris，牛津大学出版社，2003 年
+- [了解美国股票市场数据的市场](https://www0.gsb.columbia.edu/faculty/cjones/papers/2018.08.31%20US%20Equity%20Market%20Data%20Paper.pdf)，查尔斯·琼斯，纽约证券交易所，2018
+- [世界交易所联合会](https://www.world-exchanges.org/our-work/statistics)
+- [订单驱动市场的经济学](https://www.springer.com/gp/book/9788847017658)，Abergel 等人，2011 年
+    - 介绍不同社区（物理学家、经济学家、数学家、金融工程师）在建模和分析订单驱动市场方面的想法和研究。这些研究的主要兴趣是导致价格统计的统计规律性的机制。还介绍了与其他重要问题有关的结果，例如市场影响、交易策略的盈利能力或微观结构效应的数学模型。
 
-## Working with high-frequency market data
+## 使用高频市场数据
 
-Two categories of market data cover the thousands of companies listed on US exchanges that are traded under Reg NMS: The consolidated feed combines trade and quote data from each trading venue, whereas each individual exchange offers proprietary products with additional activity information for that particular venue.
+两类市场数据涵盖在 Reg NMS 下交易的在美国交易所上市的数千家公司：合并源结合了每个交易场所的交易和报价数据，而每个单独的交易所提供专有产品以及该特定场所的额外活动信息。
 
-In this section, we will first present proprietary order flow data provided by the NASDAQ that represents the actual stream of orders, trades, and resulting prices as they occur on a tick-by-tick basis. Then, we demonstrate how to regularize this continuous stream of data that arrives at irregular intervals into bars of a fixed duration. Finally, we introduce AlgoSeek’s equity minute bar data that contains consolidated trade and quote information. In each case, we illustrate how to work with the data using Python so you can leverage these sources for your trading strategy.
+在本节中，我们将首先展示 NASDAQ 提供的专有订单流数据，这些数据代表实际的订单流、交易和最终价格，因为它们是在逐笔报价的基础上发生的。然后，我们演示如何将这种以不规则间隔到达的连续数据流规范化为固定持续时间的条形图。最后，我们介绍包含综合交易和报价信息的 AlgoSeek 股票分钟柱数据。在每种情况下，我们都会说明如何使用 Python 处理数据，以便您可以将这些来源用于您的交易策略。
 
-### How to work with NASDAQ order book data
+### 如何使用纳斯达克订单簿数据
 
-The primary source of market data is the order book, which updates in real-time throughout the day to reflect all trading activity. Exchanges typically offer this data as a real-time service for a fee but may provide some historical data for free. 
+市场数据的主要来源是订单簿，它全天实时更新以反映所有交易活动。交易所通常将此数据作为收费的实时服务提供，但也可能免费提供一些历史数据。
 
-In the United States, stock markets provide quotes in three tiers, namely Level I, II and III that offer increasingly granular information and capabilities:
-- Level I: real-time bid- and ask-price information, as available from numerous online sources
-- Level II: adds information about bid and ask prices by specific market makers as well as size and time of recent transactions for better insights into the liquidity of a given equity.
-- Level III: adds the ability to enter or change quotes, execute orders, and confirm trades and is only available to market makers and exchange member firms. Access to Level III quotes permits registered brokers to meet best execution requirements.
+在美国，股票市场提供三级报价，即一级、二级和三级，提供越来越细化的信息和功能：
+- 第一级：实时出价和要价信息，可从众多在线资源中获得
+- 二级：添加有关特定做市商的出价和要价的信息，以及最近交易的规模和时间，以便更好地了解给定股票的流动性。
+- III 级：增加了输入或更改报价、执行订单和确认交易的能力，并且仅供做市商和交易所成员公司使用。访问 III 级报价允许注册经纪人满足最佳执行要求。
 
-The trading activity is reflected in numerous messages about orders sent by market participants. These messages typically conform to the electronic Financial Information eXchange (FIX) communications protocol for real-time exchange of securities transactions and market data or a native exchange protocol. 
+交易活动反映在有关市场参与者发送的订单的大量消息中。这些消息通常符合用于实时交换证券交易和市场数据的电子金融信息交换 (FIX) 通信协议或本地交换协议。
 
-- [The Limit Order Book](https://arxiv.org/pdf/1012.0349.pdf)
-- [Feature Engineering for Mid-Price Prediction With Deep Learning](https://arxiv.org/abs/1904.05384)
-- [Price jump prediction in Limit Order Book](https://arxiv.org/pdf/1204.1381.pdf)
-- [Handling and visualizing order book data](https://github.com/0b01/recurrent-autoencoder/blob/master/Visualizing%20order%20book.ipynb) by Ricky Han
+- [限价订单簿](https://arxiv.org/pdf/1012.0349.pdf)
+- [使用深度学习进行中间价格预测的特征工程](https://arxiv.org/abs/1904.05384)
+- [限价订单簿中的价格跳跃预测](https://arxiv.org/pdf/1204.1381.pdf)
+- [处理和可视化订单簿数据](https://github.com/0b01/recurrent-autoencoder/blob/master/Visualizing%20order%20book.ipynb) 作者：Ricky Han
 
-### How trades are communicated: The FIX protocol
+### 交易是如何传达的：FIX 协议
 
-The trading activity is reflected in numerous messages about trade orders sent by market participants. These messages typically conform to the electronic Financial Information eXchange (FIX) communications protocol for real-time exchange of securities transactions and market data or a native exchange protocol. 
+交易活动反映在市场参与者发送的有关交易订单的大量消息中。这些消息通常符合用于实时交换证券交易和市场数据的电子金融信息交换 (FIX) 通信协议或本地交换协议。
 
-- [FIX Trading Standards](https://www.fixtrading.org/standards/)
-- Python: [Simplefix](https://github.com/da4089/simplefix)
-- C++ version: [quickfixengine](http://www.quickfixengine.org/)
-- Interactive Brokers [interface](https://www.interactivebrokers.com/en/index.php?f=4988)
+- [FIX 交易标准](https://www.fixtrading.org/standards/)
+- Python：[简单修复](https://github.com/da4089/simplefix)
+- C++ 版本：[quickfixengine](http://www.quickfixengine.org/)
+- 盈透证券[界面](https://www.interactivebrokers.com/en/index.php?f=4988)
 
-### The NASDAQ TotalView-ITCH data feed
+### 纳斯达克 TotalView-ITCH 数据提要
 
-While FIX has a dominant large market share, exchanges also offer native protocols. The Nasdaq offers a TotalView ITCH direct data-feed protocol that allows subscribers to track individual orders for equity instruments from placement to execution or cancellation.
+虽然 FIX 占据着巨大的市场份额，但交易所也提供本地协议。纳斯达克提供 TotalView ITCH 直接数据馈送协议，允许订户跟踪从放置到执行或取消的单个股票工具订单。
 
-- The ITCH [Specifications](http://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/NQTVITCHspecification.pdf)
-- [Sample Files](ftp://emi.nasdaq.com/ITCH/)
+- ITCH [规范](http://www.nasdaqtrader.com/content/technicalsupport/specifications/dataproducts/NQTVITCHspecification.pdf)
+- [示例文件](ftp://emi.nasdaq.com/ITCH/)
 
-#### Code Example: Parsing and normalizing tick data 
+#### 代码示例：解析和规范化刻度数据
 
-- The folder [NASDAQ TotalView ITCH Order Book](01_NASDAQ_TotalView-ITCH_Order_Book) contains the notebooks to
-    - download NASDAQ Total View sample tick data,
-    - parse the messages from the binary source data
-    - reconstruct the order book for a given stock
-    - visualize order flow data
-    - normalize tick data
-- Binary Data services: the `struct` [module](https://docs.python.org/3/library/struct.html)
+- 文件夹 [NASDAQ TotalView ITCH Order Book](01_NASDAQ_TotalView-ITCH_Order_Book) 包含笔记本
+    - 下载纳斯达克 Total View 样本报价数据，
+    - 解析来自二进制源数据的消息
+    - 重建给定股票的订单簿
+    - 可视化订单流数据
+    - 标准化刻度数据
+- 二进制数据服务：`struct` [模块](https://docs.python.org/3/library/struct.html)
  
-#### Additional Resources
+#### 其他资源
  
- - Native exchange protocols [around the world](https://en.wikipedia.org/wiki/List_of_electronic_trading_protocols_
- - [High-frequency trading in a limit order book](https://www.math.nyu.edu/faculty/avellane/HighFrequencyTrading.pdf), Avellaneda and Stoikov, Quantitative Finance, Vol. 8, No. 3, April 2008, 217–224
- - [Using a Simulator to Develop Execution Algorithms](http://www.math.ualberta.ca/~cfrei/PIMS/Almgren5.pdf), Robert Almgren, quantitative brokers, 2016
- - [Backtesting Microstructure Strategies](https://rickyhan.com/jekyll/update/2019/12/22/how-to-simulate-market-microstructure.html), Ricky Han, 2019
-- [Optimal High-Frequency Market Making](http://stanford.edu/class/msande448/2018/Final/Reports/gr5.pdf), Fushimi et al, 2018
-- [Simulating and analyzing order book data: The queue-reactive model](https://arxiv.org/pdf/1312.0563.pdf), Huan et al, 2014
-- [How does latent liquidity get revealed in the limit order book?](https://arxiv.org/pdf/1808.09677.pdf), Dall’Amico et al, 2018
+- 本地交换协议 [世界各地](https://en.wikipedia.org/wiki/List_of_electronic_trading_protocols_
+ - [限价订单簿中的高频交易](https://www.math.nyu.edu/faculty/avellane/HighFrequencyTrading.pdf)，Avellaneda 和 Stoikov，《量化金融》，第 1 卷。 8, No. 3, April 2008, 217–224
+ - [使用模拟器开发执行算法](http://www.math.ualberta.ca/~cfrei/PIMS/Almgren5.pdf)，Robert Almgren，量化经纪人，2016
+ - [回测微观结构策略](https://rickyhan.com/jekyll/update/2019/12/22/how-to-simulate-market-microstructure.html)，Ricky Han，2019
+- [最优高频做市](http://stanford.edu/class/msande448/2018/Final/Reports/gr5.pdf)，Fushimi 等人，2018
+- [模拟和分析订单簿数据：队列反应模型](https://arxiv.org/pdf/1312.0563.pdf)，Huan 等人，2014
+- [如何在限价订单簿中揭示潜在流动性？](https://arxiv.org/pdf/1808.09677.pdf)，Dall’Amico 等人，2018 年
 
-### AlgoSeek minute bars: Equity quote and trade data
+### AlgoSeek 分钟柱：股票报价和交易数据
 
-AlgoSeek provides historical intraday data at the quality previously available only to institutional investors. The AlgoSeek Equity bars provide a very detailed intraday quote and trade data in a user-friendly format aimed at making it easy to design and backtest intraday ML-driven strategies. As we will see, the data includes not only OHLCV information but also information on the bid-ask spread and the number of ticks with up and down price moves, among others.
-AlgoSeek has been so kind as to provide samples of minute bar data for the NASDAQ 100 stocks from 2013-2017 for demonstration purposes and will make a subset of this data available to readers of this book.
+AlgoSeek 以以前仅供机构投资者使用的质量提供历史盘中数据。 AlgoSeek Equity bar 以用户友好的格式提供非常详细的日内报价和交易数据，旨在简化日内 ML 驱动策略的设计和回测。正如我们将看到的，数据不仅包括 OHLCV 信息，还包括关于买卖价差的信息以及价格上下波动的分时报价等信息。
+AlgoSeek 非常友好地提供了 2013 年至 2017 年纳斯达克 100 只股票的分钟条数据样本以供演示之用，并将向本书的读者提供该数据的一个子集。
 
-#### From the consolidated feed to minute bars
+#### 从综合提要到分钟柱
 
-AlgoSeek minute bars are based on data provided by the Securities Information Processor (SIP) that manages the consolidated feed mentioned at the beginning of this section. You can find the documentation at https://www.algoseek.com/data-drive.html.
+AlgoSeek 分钟柱基于证券信息处理器 (SIP) 提供的数据，该处理器管理本节开头提到的综合提要。您可以在 https://www.algoseek.com/data-drive.html 找到文档。
 
-Quote and trade data fields
-The minute bar data contain up to 54 fields. There are eight fields for the open, high, low, and close elements of the bar, namely:
-- The timestamp for the bar and the corresponding trade 
-- The price and the size for the prevailing bid-ask quote and the relevant trade
+报价和交易数据字段
+分钟柱数据最多包含 54 个字段。柱线的开盘价、最高价、最低价和收盘价元素有八个字段，即：
+- 柱和相应交易的时间戳
+- 当前买卖报价和相关交易的价格和规模
 
-There are also 14 data points with volume information for the bar period:
-- The number of shares and corresponding trades
-- The trade volumes at or below the bid, between the bid quote and the midpoint, at the midpoint, between the midpoint and the ask quote, and at or above the ask, as well as for crosses
-- The number of shares traded with up- or downticks, i.e., when the price rose or fell, as well as when the price did not change, differentiated by the previous direction of price movement
+还有 14 个数据点包含柱形周期的交易量信息：
+- 股票数量和相应的交易
+- 等于或低于买价、买价和中点之间、中点、中点和卖价之间、等于或高于卖价以及交叉盘的交易量
+- 上涨或下跌交易的股票数量，即当价格上涨或下跌时，以及当价格没有变化时，根据之前的价格变动方向区分
 
-#### Code Example: How to process AlgoSeek intraday data
+#### 代码示例：如何处理 AlgoSeek 日内数据
 
-The directory [algoseek_intraday](02_algoseek_intraday) contains instructions on how to download sample data from AlgoSeek. 
+目录 [algoseek_intraday](02_algoseek_intraday) 包含有关如何从 AlgoSeek 下载示例数据的说明。
 
-- This information will be made available shortly.
+- 此信息将很快提供。
 
-## API Access to Market Data
+## API 访问市场数据
 
-There are several options to access market data via API using Python. In this chapter, we first present a few sources built into the [`pandas`](https://pandas.pydata.org/) library. Then we briefly introduce the trading platform [Quantopian](https://www.quantopian.com/posts), the data provider [Quandl](https://www.quandl.com/) (acquired by NASDAQ in 12/2018) and the backtesting library [`zipline`](https://github.com/quantopian/zipline) that we will use later in the book, and list several additional options to access various types of market data. The directory [data_providers](03_data_providers) contains several notebooks that illustrate the usage of these options.
+使用 Python 通过 API 访问市场数据有多种选择。在本章中，我们首先介绍 [`pandas`](https://pandas.pydata.org/) 库中内置的一些源代码。接着简单介绍一下交易平台【Quantopian】（https://www.quantopian.com/posts），数据提供商【Quandl】（https://www.quandl.com/）（12/2018被纳斯达克收购） ) 和我们将在本书后面使用的回溯测试库 [`zipline`](https://github.com/quantopian/zipline)，并列出了几个额外的选项来访问各种类型的市场数据。目录 [data_providers](03_data_providers) 包含几个说明这些选项用法的笔记本。
 
-### Remote data access using pandas
+### 使用 pandas 进行远程数据访问
 
-- read_html [docs](https://pandas.pydata.org/pandas-docs/stable/)
-- S&P 500 constituents from [Wikipedia](https://en.wikipedia.org/wiki/List_of_S%26P_500_companies)
-- `pandas-datareader`[docs](https://pandas-datareader.readthedocs.io/en/latest/index.html)
+- read_html [文档](https://pandas.pydata.org/pandas-docs/stable/)
+- 标准普尔 500 成分股来自 [维基百科](https://en.wikipedia.org/wiki/List_of_S%26P_500_companies)
+- `pandas-datareader`[文档](https://pandas-datareader.readthedocs.io/en/latest/index.html)
 
-### Code Examples
+### 代码示例
 
-The folder [data providers](03_data_providers) contains examples to use various data providers.
-1. Remote data access using [pandas DataReader](03_data_providers/01_pandas_datareader_demo.ipynb)
-2. Downloading market and fundamental data with [yfinance](03_data_providers/02_yfinance_demo.ipynb)
-3. Parsing Limit Order Tick Data from [LOBSTER](03_data_providers/03_lobster_itch_data.ipynb)
+文件夹 [数据提供者](03_data_providers) 包含使用各种数据提供者的示例。
+1.使用[pandas DataReader]进行远程数据访问(03_data_providers/01_pandas_datareader_demo.ipynb)
+2. 使用[yfinance](03_data_providers/02_yfinance_demo.ipynb)下载行情和基本面数据
+3. 从[LOBSTER](03_data_providers/03_lobster_itch_data.ipynb) 解析限价订单报价数据
 4. Quandl [API Demo](03_data_providers/04_quandl_demo.ipynb)
-5. Zipline [data access](03_data_providers/05_zipline_data_demo.ipynb)
+5. Zipline [数据访问](03_data_providers/05_zipline_data_demo.ipynb)
 
-### Data sources
+### 数据源
 
 - Quandl [docs](https://docs.quandl.com/docs) and Python [API](https://www.quandl.com/tools/python﻿)
 - [yfinance](https://github.com/ranaroussi/yfinance)
@@ -172,46 +172,46 @@ The folder [data providers](03_data_providers) contains examples to use various 
 - [Alpha Trading Labs](https://www.alphatradinglabs.com/)
 - [Tiingo](https://www.tiingo.com/) stock market tools
 
-### Industry News
+### 行业新闻
 
-- [Bloomberg and Reuters lose data share to smaller rivals](https://www.ft.com/content/622855dc-2d31-11e8-9b4b-bc4b9f08f381), FT, 2018
+- [彭博社和路透社的数据份额输给了较小的竞争对手](https://www.ft.com/content/622855dc-2d31-11e8-9b4b-bc4b9f08f381)，英国《金融时报》，2018 年
 
-## How to work with Fundamental data
+## 如何使用基础数据
 
-Fundamental data pertains to the economic drivers that determine the value of securities. The nature of the data depends on the asset class:
-- For equities and corporate credit, it includes corporate financials as well as industry and economy-wide data.
-- For government bonds, it includes international macro-data and foreign exchange.
-- For commodities, it includes asset-specific supply-and-demand determinants, such as weather data for crops. 
+基本数据与决定证券价值的经济驱动因素有关。数据的性质取决于资产类别：
+- 对于股票和企业信贷，它包括企业财务以及行业和经济范围内的数据。
+- 对于政府债券，它包括国际宏观数据和外汇。
+- 对于大宗商品，它包括特定资产的供需决定因素，例如农作物的天气数据。
 
-We will focus on equity fundamentals for the US, where data is easier to access. There are some 13,000+ public companies worldwide that generate 2 million pages of annual reports and 30,000+ hours of earnings calls. In algorithmic trading, fundamental data and features engineered from this data may be used to derive trading signals directly, for example as value indicators, and are an essential input for predictive models, including machine learning models.
+我们将关注美国的股票基本面，因为美国的数据更容易获取。全球约有 13,000 多家上市公司生成了 200 万页的年度报告和 30,000 多个小时的财报电话会议。在算法交易中，基本数据和根据这些数据设计的特征可用于直接导出交易信号，例如作为价值指标，并且是预测模型（包括机器学习模型）的基本输入。
 
-### Financial statement data
+###财务报表数据
 
-The Securities and Exchange Commission (SEC) requires US issuers, that is, listed companies and securities, including mutual funds to file three quarterly financial statements (Form 10-Q) and one annual report (Form 10-K), in addition to various other regulatory filing requirements.
+美国证券交易委员会 (SEC) 要求美国发行人，即上市公司和证券，包括互惠基金，除提交各种其他监管备案要求。
 
-Since the early 1990s, the SEC made these filings available through its Electronic Data Gathering, Analysis, and Retrieval (EDGAR) system. They constitute the primary data source for the fundamental analysis of equity and other securities, such as corporate credit, where the value depends on the business prospects and financial health of the issuer. 
+自 1990 年代初期以来，SEC 通过其电子数据收集、分析和检索 (EDGAR) 系统提供了这些文件。它们构成了股票和其他证券（例如公司信贷）基本面分析的主要数据来源，其中价值取决于发行人的业务前景和财务状况。
 
-### Automated processing using XBRL markup
+### 使用 XBRL 标记自动处理
 
-Automated analysis of regulatory filings has become much easier since the SEC introduced XBRL, a free, open, and global standard for the electronic representation and exchange of business reports. XBRL is based on XML; it relies on [taxonomies](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) that define the meaning of the elements of a report and map to tags that highlight the corresponding information in the electronic version of the report. One such taxonomy represents the US Generally Accepted Accounting Principles (GAAP).
+自 SEC 引入 XBRL 以来，对监管文件的自动分析变得更加容易，XBRL 是一种免费、开放的全球标准，用于业务报告的电子表示和交换。 XBRL 基于 XML；它依赖于 [taxonomies](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) 来定义报告元素的含义并映射到突出显示电子版报告中的相应信息。其中一种分类法代表美国公认会计原则 (GAAP)。
 
-The SEC introduced voluntary XBRL filings in 2005 in response to accounting scandals before requiring this format for all filers since 2009 and continues to expand the mandatory coverage to other regulatory filings. The SEC maintains a website that lists the current taxonomies that shape the content of different filings and can be used to extract specific items.
+SEC 在 2005 年引入了自愿 XBRL 申报以应对会计丑闻，然后自 2009 年起要求所有申报者采用这种格式，并继续将强制性范围扩大到其他监管申报。 SEC 维护着一个网站，该网站列出了影响不同文件内容的当前分类法，可用于提取特定项目。
 
-There are several avenues to track and access fundamental data reported to the SEC:
-- As part of the [EDGAR Public Dissemination Service]((https://www.sec.gov/oit/announcement/public-dissemination-service-system-contact.html)) (PDS), electronic feeds of accepted filings are available for a fee. 
-- The SEC updates [RSS feeds](https://www.sec.gov/structureddata/rss-feeds-submitted-filings) every 10 minutes, which list structured disclosure submissions.
-- There are public [index files](https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm) for the retrieval of all filings through FTP for automated processing.
-- The financial statement (and notes) datasets contain parsed XBRL data from all financial statements and the accompanying notes.
+有几种途径可以跟踪和访问向美国证券交易委员会报告的基本数据：
+- 作为 [EDGAR 公共传播服务]((https://www.sec.gov/oit/announcement/public-dissemination-service-system-contact.html)) (PDS) 的一部分，接受的文件的电子提要是收费。
+- SEC 每 10 分钟更新一次 [RSS 提要](https://www.sec.gov/structureddata/rss-feeds-submitted-filings)，其中列出了结构化披露提交。
+- 有公共[索引文件](https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm) 用于通过 FTP 检索所有文件以进行自动处理。
+- 财务报表（和附注）数据集包含来自所有财务报表和附注的经过解析的 XBRL 数据。
 
-The SEC also publishes log files containing the [internet search traffic](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) for EDGAR filings through SEC.gov, albeit with a six-month delay.
+SEC 还通过 SEC.gov 发布包含 EDGAR 文件的 [互联网搜索流量](https://www.sec.gov/dera/data/edgar-log-file-data-set.html) 的日志文件，尽管六个月的延迟。
 
-### Code Example: Building a fundamental data time series
+### 代码示例：构建基本数据时间序列
 
-The scope of the data in the [Financial Statement and Notes](https://www.sec.gov/dera/data/financial-statement-and-notes-data-set.html) datasets consists of numeric data extracted from the primary financial statements (Balance sheet, income statement, cash flows, changes in equity, and comprehensive income) and footnotes on those statements. The data is available as early as 2009.
+[财务报表和注释](https://www.sec.gov/dera/data/financial-statement-and-notes-data-set.html) 数据集中的数据范围包括从主要财务报表（资产负债表、损益表、现金流量、权益变动和综合收益）以及这些报表的脚注。最早可获得 2009 年的数据。
 
-The folder [04_sec_edgar](04_sec_edgar) contains the notebook [edgar_xbrl](04_sec_edgar/edgar_xbrl.ipynb) to download and parse EDGAR data in XBRL format, and create fundamental metrics like the P/E ratio by combining financial statement and price data.
+文件夹 [04_sec_edgar](04_sec_edgar) 包含笔记本 [edgar_xbrl](04_sec_edgar/edgar_xbrl.ipynb)，用于下载和解析 XBRL 格式的 EDGAR 数据，并通过结合财务报表和价格数据创建市盈率等基本指标。
 
-### Other fundamental data sources
+### 其他基础数据源
 
 - [Compilation of macro resources by the Yale Law School](https://library.law.yale.edu/news/75-sources-economic-data-statistics-reports-and-commentary)
 - [Capital IQ](www.capitaliq.com)
@@ -220,14 +220,14 @@ The folder [04_sec_edgar](04_sec_edgar) contains the notebook [edgar_xbrl](04_se
 - [Northfield Information Services](www.northinfo.com)
 - [Quantitative Services Group](www.qsg.com)
 
-## Efficient data storage with pandas
+## 使用 pandas 进行高效的数据存储
 
-We'll be using many different data sets in this book, and it's worth comparing the main formats for efficiency and performance. In particular, we compare the following:
+我们将在本书中使用许多不同的数据集，比较主要格式的效率和性能是值得的。特别是，我们比较以下内容：
 
-- CSV: Comma-separated, standard flat text file format.
-- HDF5: Hierarchical data format, developed initially at the National Center for Supercomputing, is a fast and scalable storage format for numerical data, available in pandas using the PyTables library.
-- Parquet: A binary, columnar storage format, part of the Apache Hadoop ecosystem, that provides efficient data compression and encoding and has been developed by Cloudera and Twitter. It is available for pandas through the pyarrow library, led by Wes McKinney, the original author of pandas.
+- CSV：逗号分隔的标准平面文本文件格式。
+- HDF5：分层数据格式，最初由国家超级计算中心开发，是一种快速且可扩展的数字数据存储格式，可在使用 PyTables 库的 pandas 中使用。
+- Parquet：一种二进制、列式存储格式，是 Apache Hadoop 生态系统的一部分，可提供高效的数据压缩和编码，由 Cloudera 和 Twitter 开发。它可通过 pyarrow 库用于 pandas，该库由 pandas 的原作者 Wes McKinney 领导。
 
-### Code Example
+### 代码示例
 
-The notebook [storage_benchmark](05_storage_benchmark/storage_benchmark.ipynb) in the directory [05_storage_benchmark](05_storage_benchmark) compares the performance of the preceding libraries.
+[05_storage_benchmark](05_storage_benchmark)目录下的notebook [storage_benchmark](05_storage_benchmark/storage_benchmark.ipynb)对比了上述库的性能。
