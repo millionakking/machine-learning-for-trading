@@ -1,154 +1,154 @@
-# Portfolio Optimization and Performance Evaluation
+# 投资组合优化和绩效评估
 
-To test a strategy prior to implementation under market conditions, we need to simulate the trades that the algorithm would make and verify their performance. Strategy evaluation includes backtesting against historical data to optimize the strategy's parameters and forward-testing to validate the in-sample performance against new, out-of-sample data. The goal is to avoid false discoveries from tailoring a strategy to specific past circumstances.
+为了在市场条件下实施之前测试策略，我们需要模拟算法进行的交易并验证其性能。策略评估包括针对历史数据进行回测以优化策略的参数，以及进行前向测试以根据新的样本外数据验证样本内性能。目标是避免因根据过去的特定情况调整策略而出现错误。
 
-In a portfolio context, positive asset returns can offset negative price movements. Positive price changes for one asset are more likely to offset losses on another the lower the correlation between the two positions. Based on how portfolio risk depends on the positions’ covariance, Harry Markowitz developed the theory behind modern portfolio management based on diversification in 1952. The result is mean-variance optimization that selects weights for a given set of assets to minimize risk, measured as the standard deviation of returns for a given expected return.
+在投资组合的背景下，正资产回报可以抵消负价格变动。一种资产的正价格变化更有可能抵消另一种资产的损失，两种头寸之间的相关性越低。基于投资组合风险如何取决于头寸的协方差，Harry Markowitz 于 1952 年开发了基于多元化的现代投资组合管理背后的理论。其结果是均值方差优化，它为一组给定的资产选择权重以最小化风险，衡量为给定预期收益的收益标准差。
 
-The capital asset pricing model (CAPM) introduces a risk premium, measured as the expected return in excess of a risk-free investment, as an equilibrium reward for holding an asset. This reward compensates for the exposure to a single risk factor—the market—that is systematic as opposed to idiosyncratic to the asset and thus cannot be diversified away. 
+资本资产定价模型 (CAPM) 引入了风险溢价，以超过无风险投资的预期回报来衡量，作为持有资产的均衡回报。这种回报补偿了对单一风险因素（市场）的敞口，该风险因素是系统性的，而不是资产的特殊性，因此不能分散掉。
 
-Risk management has evolved to become more sophisticated as additional risk factors and more granular choices for exposure have emerged. The Kelly criterion is a popular approach to dynamic portfolio optimization, which is the choice of a sequence of positions over time; it has been famously adapted from its original application in gambling to the stock market by Edward Thorp in 1968.
+随着额外的风险因素和更精细的风险暴露选择的出现，风险管理已经变得更加复杂。凯利准则是一种流行的动态投资组合优化方法，它是随时间推移选择一系列头寸；爱德华·索普 (Edward Thorp) 于 1968 年将其最初在赌博中的应用改编成了股票市场，这一点广为人知。
 
-As a result, there are several approaches to optimize portfolios that include the application of machine learning (ML) to learn hierarchical relationships among assets and treat their holdings as complements or substitutes with respect to the portfolio risk profile. This chapter will cover the following topics:
+因此，有多种优化投资组合的方法，包括应用机器学习 (ML) 来了解资产之间的层次关系，并将其持有的资产视为投资组合风险状况的补充或替代品。本章将涵盖以下主题：
 
-## Content
+## 内容
 
-1. [How to measure portfolio performance](#how-to-measure-portfolio-performance)
-    * [The (adjusted) Sharpe Ratio](#the-adjusted-sharpe-ratio)
-    * [The fundamental law of active management](#the-fundamental-law-of-active-management)
-2. [How to manage Portfolio Risk & Return](#how-to-manage-portfolio-risk--return)
-    * [The evolution of modern portfolio management](#the-evolution-of-modern-portfolio-management)
-    * [Mean-variance optimization](#mean-variance-optimization)
-        - [Code Examples: Finding the efficient frontier in Python](#code-examples-finding-the-efficient-frontier-in-python)
-    * [Alternatives to mean-variance optimization](#alternatives-to-mean-variance-optimization)
-        - [The 1/N portfolio](#the-1n-portfolio)
-        - [The minimum-variance portfolio](#the-minimum-variance-portfolio)
-        - [The Black-Litterman approach](#the-black-litterman-approach)
-        - [How to size your bets – the Kelly rule](#how-to-size-your-bets--the-kelly-rule)
-        - [Alternatives to MV Optimization with Python](#alternatives-to-mv-optimization-with-python)
-    * [Hierarchical Risk Parity](#hierarchical-risk-parity)
-3. [Trading and managing a portfolio with `Zipline`](#trading-and-managing-a-portfolio-with-zipline)
-    * [Code Examples: Backtests with trades and portfolio optimization ](#code-examples-backtests-with-trades-and-portfolio-optimization-)
-4. [Measure backtest performance with `pyfolio`](#measure-backtest-performance-with-pyfolio)
-    * [Code Example: `pyfolio` evaluation from a `Zipline` backtest](#code-example-pyfolio-evaluation-from-a-zipline-backtest)
+1. [如何衡量投资组合绩效](#how-to-measure-portfolio-performance)
+    * [（调整后的）夏普比率]（#the-adjusted-sharpe-ratio）
+    * [主动管理的基本法则](#the-fundamental-law-of-active-management)
+2. [如何管理投资组合风险和回报](#how-to-manage-portfolio-risk--return)
+    * [现代投资组合管理的演变](#the-evolution-of-modern-portfolio-management)
+    * [均值-方差优化](#mean-variance-optimization)
+        - [代码示例：在 Python 中寻找有效边界](#code-examples-finding-the-efficient-frontier-in-python)
+    * [均值方差优化的替代方案](#alternatives-to-mean-variance-optimization)
+        - [1/N 组合](#the-1n-portfolio)
+        - [最小方差投资组合](#the-minimum-variance-portfolio)
+        - [Black-Litterman 方法](#the-black-litterman-approach)
+        - [如何调整你的赌注——凯利法则](#how-to-size-your-bets--the-kelly-rule)
+        - [使用 Python 进行 MV 优化的替代方案](#alternatives-to-mv-optimization-with-python)
+    * [分层风险平价](#hierarchical-risk-parity)
+3. [使用 `Zipline` 交易和管理投资组合](#trading-and-managing-a-portfolio-with-zipline)
+    * [代码示例：通过交易和投资组合优化进行回测](#code-examples-backtests-with-trades-and-portfolio-optimization-)
+4. [使用 `pyfolio` 测量回测性能](#measure-backtest-performance-with-pyfolio)
+    * [代码示例：来自 `Zipline` 回测的 `pyfolio` 评估]（#code-example-pyfolio-evaluation-from-a-zipline-backtest）
 
-## How to measure portfolio performance
+## 如何衡量投资组合的表现
 
-To evaluate and compare different strategies or to improve an existing strategy, we need metrics that reflect their performance with respect to our objectives. In investment and trading, the most common objectives are the **return and the risk of the investment portfolio**.
+为了评估和比较不同的策略或改进现有策略，我们需要能够反映它们在我们目标方面的表现的指标。在投资和交易中，最常见的目标是**投资组合的回报和风险**。
 
-The return and risk objectives imply a trade-off: taking more risk may yield higher returns in some circumstances, but also implies greater downside. To compare how different strategies navigate this trade-off, ratios that compute a measure of return per unit of risk are very popular. We’ll discuss the **Sharpe ratio** and the **information ratio** (IR) in turn.
+回报和风险目标意味着权衡：在某些情况下承担更多风险可能会产生更高的回报，但也意味着更大的下行空间。为了比较不同的策略如何应对这种权衡，计算每单位风险回报率的比率非常受欢迎。我们将依次讨论**夏普比率**和**信息比率**（IR）。
 
-### The (adjusted) Sharpe Ratio
+###（调整后的）夏普比率
 
-The ex-ante Sharpe Ratio (SR) compares the portfolio's expected excess portfolio to the volatility of this excess return, measured by its standard deviation. It measures the compensation as the average excess return per unit of risk taken. It can be estimated from data.
+事前夏普比率 (SR) 将投资组合的预期超额投资组合与其标准差衡量的超额回报的波动性进行比较。它将报酬衡量为承担每单位风险的平均超额回报。可以从数据中估算出来。
 
-Financial returns often violate the iid assumptions. Andrew Lo has derived the necessary adjustments to the distribution and the time aggregation for returns that are stationary but autocorrelated. This is important because the time-series properties of investment strategies (for example, mean reversion, momentum, and other forms of serial correlation) can have a non-trivial impact on the SR estimator itself, especially when annualizing the SR from higher-frequency data.
+财务回报通常违反独立同分布假设。 Andrew Lo 对平稳但自相关的回报的分布和时间聚合进行了必要的调整。这很重要，因为投资策略的时间序列属性（例如，均值回归、动量和其他形式的序列相关性）会对 SR 估计量本身产生不小的影响，尤其是在从更高频率对 SR 进行年化时数据。
 
-- [The Statistics of Sharpe Ratios](https://www.jstor.org/stable/4480405?seq=1#page_scan_tab_contents), Andrew Lo, Financial Analysts Journal, 2002
+- [夏普比率统计](https://www.jstor.org/stable/4480405?seq=1#page_scan_tab_contents)，Andrew Lo，金融分析师杂志，2002 年
 
-### The fundamental law of active management
+###主动管理的基本规律
 
-It’s a curious fact that Renaissance Technologies (RenTec), the top-performing quant fund founded by Jim Simons that we mentioned in [Chapter 1](../01_machine_learning_for_trading), has produced similar returns as Warren Buffet despite extremely different approaches. Warren Buffet’s investment firm Berkshire Hathaway holds some 100-150 stocks for fairly long periods, whereas RenTec may execute 100,000 trades per day. How can we compare these distinct strategies?
+一个奇怪的事实是，我们在 [第 1 章](../01_machine_learning_for_trading) 中提到的由 Jim Simons 创立的表现最佳的量化基金 Renaissance Technologies (RenTec) 产生了与沃伦巴菲特相似的回报，尽管方法截然不同。沃伦巴菲特的投资公司伯克希尔哈撒韦公司在相当长的时间内持有大约 100-150 只股票，而 RenTec 每天可能执行 100,000 笔交易。我们如何比较这些不同的策略？
 
-ML is about optimizing objective functions. In algorithmic trading, the objectives are the return and the risk of the overall investment portfolio, typically relative to a benchmark (which may be cash, the risk-free interest rate, or an asset price index like the S&P 500).
+ML 是关于优化目标函数的。在算法交易中，目标是整体投资组合的回报和风险，通常相对于基准（可能是现金、无风险利率或资产价格指数，如标准普尔 500 指数）。
 
-A high Information Ratio (IR) implies attractive out-performance relative to the additional risk taken. The Fundamental Law of Active Management breaks the IR down into the information coefficient (IC) as a measure of forecasting skill, and the ability to apply this skill through independent bets. It summarizes the importance to play both often (high breadth) and to play well (high IC).
+高信息率 (IR) 意味着相对于所承担的额外风险而言具有吸引力的出色表现。主动管理的基本法则将 IR 分解为信息系数 (IC)，作为衡量预测技能的指标，以及通过独立下注应用此技能的能力。它总结了经常玩（高广度）和玩好（高 IC）的重要性。
 
-The IC measures the correlation between an alpha factor and the forward returns resulting from its signals and captures the accuracy of a manager's forecasting skills. The breadth of the strategy is measured by the independent number of bets an investor makes in a given time period, and the product of both values is proportional to the IR, also known as appraisal risk (Treynor and Black).
+IC 测量 alpha 因子与其信号产生的远期回报之间的相关性，并捕捉经理预测技能的准确性。策略的广度由投资者在给定时间段内进行的独立投注数量来衡量，两个值的乘积与 IR 成正比，也称为评估风险（Treynor 和 Black）。
 
-The fundamental law is important because it highlights the key drivers of outperformance: both accurate predictions and the ability to make independent forecasts and act on these forecasts matter. In practice, estimating the breadth of a strategy is difficult given the cross-sectional and time-series correlation among forecasts. 
+基本定律很重要，因为它突出了表现出色的关键驱动因素：准确的预测和做出独立预测并根据这些预测采取行动的能力都很重要。在实践中，鉴于预测之间的横截面和时间序列相关性，很难估计策略的广度。
 
-- [Active Portfolio Management: A Quantitative Approach for Producing Superior Returns and Controlling Risk](https://www.amazon.com/Active-Portfolio-Management-Quantitative-Controlling/dp/0070248826) by Richard Grinold and Ronald Kahn, 1999
-- [How to Use Security Analysis to Improve Portfolio Selection](https://econpapers.repec.org/article/ucpjnlbus/v_3a46_3ay_3a1973_3ai_3a1_3ap_3a66-86.htm), Jack L Treynor and Fischer Black, Journal of Business, 1973
-- [Portfolio Constraints and the Fundamental Law of Active Management](https://faculty.fuqua.duke.edu/~charvey/Teaching/BA491_2005/Transfer_coefficient.pdf), Clarke et al 2002
+- [积极的投资组合管理：产生卓越回报和控制风险的定量方法](https://www.amazon.com/Active-Portfolio-Management-Quantitative-Controlling/dp/0070248826)，Richard Grinold 和 Ronald Kahn，1999
+- [如何使用证券分析改进投资组合选择](https://econpapers.repec.org/article/ucpjnlbus/v_3a46_3ay_3a1973_3ai_3a1_3ap_3a66-86.htm)，Jack L Treynor 和 Fischer Black，商业杂志，1973 年
+- [投资组合约束和主动管理的基本法则](https://faculty.fuqua.duke.edu/~charvey/Teaching/BA491_2005/Transfer_coefficient.pdf)，Clarke 等人，2002 年
 
-## How to manage Portfolio Risk & Return
+## 如何管理投资组合风险和回报
 
-Portfolio management aims to pick and size positions in financial instruments that achieve the desired risk-return trade-off regarding a benchmark. As a portfolio manager, in each period, you select positions that optimize diversification to reduce risks while achieving a target return. Across periods, these positions may require rebalancing to account for changes in weights resulting from price movements to achieve or maintain a target risk profile.
+投资组合管理旨在选择和调整金融工具中的头寸，以实现与基准相关的预期风险回报权衡。作为投资组合经理，在每个时期，您都会选择优化多元化的头寸，以降低风险，同时实现目标回报。在各个时期，这些头寸可能需要重新平衡以考虑价格变动导致的权重变化，以实现或维持目标风险状况。
 
-### The evolution of modern portfolio management
+### 现代投资组合管理的演变
 
-Diversification permits us to reduce risks for a given expected return by exploiting how imperfect correlation allows for one asset's gains to make up for another asset's losses. Harry Markowitz invented modern portfolio theory (MPT) in 1952 and provided the mathematical tools to optimize diversification by choosing appropriate portfolio weights.
+多元化允许我们通过利用不完全相关性如何允许一种资产的收益来弥补另一种资产的损失来降低给定预期回报的风险。 Harry Markowitz 于 1952 年发明了现代投资组合理论 (MPT)，并提供了通过选择适当的投资组合权重来优化多元化的数学工具。
  
-### Mean-variance optimization
+### 均值-方差优化
 
-Modern portfolio theory solves for the optimal portfolio weights to minimize volatility for a given expected return, or maximize returns for a given level of volatility. The key requisite inputs are expected asset returns, standard deviations, and the covariance matrix. 
-- [Portfolio Selection](https://www.math.ust.hk/~maykwok/courses/ma362/07F/markowitz_JF.pdf), Harry Markowitz, The Journal of Finance, 1952
-- [The Capital Asset Pricing Model: Theory and Evidence](http://mba.tuck.dartmouth.edu/bespeneckbo/default/AFA611-Eckbo%20web%20site/AFA611-S6B-FamaFrench-CAPM-JEP04.pdf), Eugene F. Fama and Kenneth R. French, Journal of Economic Perspectives, 2004
+现代投资组合理论求解最佳投资组合权重，以最小化给定预期回报的波动性，或最大化给定波动水平的回报。关键的必要输入是预期资产回报、标准差和协方差矩阵。
+- [投资组合选择](https://www.math.ust.hk/~maykwok/courses/ma362/07F/markowitz_JF.pdf), Harry Markowitz, The Journal of Finance, 1952
+- [资本资产定价模型：理论与证据](http://mba.tuck.dartmouth.edu/bespeneckbo/default/AFA611-Eckbo%20web%20site/AFA611-S6B-FamaFrench-CAPM-JEP04.pdf)， Eugene F. Fama 和 Kenneth R. French，经济展望杂志，2004 年
 
-#### Code Examples: Finding the efficient frontier in Python
+#### 代码示例：在 Python 中寻找有效边界
 
-We can calculate an efficient frontier using scipy.optimize.minimize and the historical estimates for asset returns, standard deviations, and the covariance matrix. 
-- The notebook [mean_variance_optimization](04_mean_variance_optimization.ipynb) to compute the efficient frontier in python.
+我们可以使用 scipy.optimize.minimize 和资产回报、标准差和协方差矩阵的历史估计来计算有效边界。
+- 笔记本 [mean_variance_optimization](04_mean_variance_optimization.ipynb) 用于计算 python 中的有效边界。
 
-### Alternatives to mean-variance optimization
+### 均值-方差优化的替代方案
 
-The challenges with accurate inputs for the mean-variance optimization problem have led to the adoption of several practical alternatives that constrain the mean, the variance, or both, or omit return estimates that are more challenging, such as the risk parity approach that we discuss later in this section.
+均值-方差优化问题的准确输入带来的挑战导致采用了几种实用的替代方法，这些替代方法限制了均值、方差或两者，或者忽略了更具挑战性的回报估计，例如我们讨论的风险平价方法在本节后面。
 
-#### The 1/N portfolio
+#### 1/N 投资组合
 
-Simple portfolios provide useful benchmarks to gauge the added value of complex models that generate the risk of overfitting. The simplest strategy—an equally-weighted portfolio—has been shown to be one of the best performers.
+简单的投资组合提供了有用的基准来衡量产生过度拟合风险的复杂模型的附加值。最简单的策略——等权重投资组合——已被证明是表现最好的策略之一。
 
-#### The minimum-variance portfolio
+#### 最小方差投资组合
 
-Another alternative is the global minimum-variance (GMV) portfolio, which prioritizes the minimization of risk. It is shown in the efficient frontier figure and can be calculated as follows by minimizing the portfolio standard deviation using the mean-variance framework.
+另一种选择是全局最小方差 (GMV) 投资组合，它优先考虑风险最小化。它显示在有效边界图中，可以通过使用均值-方差框架最小化投资组合标准差来计算如下。
 
-#### The Black-Litterman approach
+#### Black-Litterman 方法
 
-The Global Portfolio Optimization approach of Black and Litterman (1992) combines economic models with statistical learning and is popular because it generates estimates of expected returns that are plausible in many situations.
-The technique assumes that the market is a mean-variance portfolio as implied by the CAPM equilibrium model. It builds on the fact that the observed market capitalization can be considered as optimal weights assigned to each security by the market. Market weights reflect market prices that, in turn, embody the market’s expectations of future returns.
+Black 和 Litterman (1992) 的全球投资组合优化方法将经济模型与统计学习相结合，并且很受欢迎，因为它可以生成在许多情况下都合理的预期回报估计。
+该技术假设市场是 CAPM 均衡模型所暗示的均值-方差投资组合。它建立在这样一个事实的基础上，即观察到的市值可以被视为市场分配给每种证券的最佳权重。市场权重反映了市场价格，而市场价格又体现了市场对未来回报的预期。
 
-- [Global Portfolio Optimization](http://www.sef.hku.hk/tpg/econ6017/2011/black-litterman-1992.pdf), Black, Fischer; Litterman, Robert
-Financial Analysts Journal, 1992
+- [全球投资组合优化](http://www.sef.hku.hk/tpg/econ6017/2011/black-litterman-1992.pdf), Black, Fischer;利特曼，罗伯特
+金融分析师杂志，1992 年
 
-#### How to size your bets – the Kelly rule
+#### 如何调整你的赌注——凯利法则
 
-The Kelly rule has a long history in gambling because it provides guidance on how much to stake on each of an (infinite) sequence of bets with varying (but favorable) odds to maximize terminal wealth. It was published as A New Interpretation of the Information Rate in 1956 by John Kelly who was a colleague of Claude Shannon's at Bell Labs. He was intrigued by bets placed on candidates at the new quiz show The $64,000 Question, where a viewer on the west coast used the three-hour delay to obtain insider information about the winners. 
+凯利规则在赌博领域有着悠久的历史，因为它提供了关于在不同（但有利的）赔率的（无限）投注序列中的每一个下注多少以最大化最终财富的指导。它于 1956 年由 Claude Shannon 在贝尔实验室的同事 John Kelly 作为信息率的新解释发表。他对新问答节目 The $64,000 Question 中对候选人的赌注很感兴趣，西海岸的一位观众利用三个小时的延迟来获取有关获胜者的内幕信息。
 
-Kelly drew a connection to Shannon's information theory to solve for the bet that is optimal for long-term capital growth when the odds are favorable, but uncertainty remains. His rule maximizes logarithmic wealth as a function of the odds of success of each game, and includes implicit bankruptcy protection since log(0) is negative infinity so that a Kelly gambler would naturally avoid losing everything.
+凯利将香农的信息理论联系起来，以解决在赔率有利但不确定性仍然存在的情况下对长期资本增长的最佳赌注。他的规则最大化对数财富作为每场比赛成功几率的函数，并且包括隐含的破产保护，因为 log(0) 是负无穷大，因此凯利赌徒自然会避免失去一切。
 
-- [A New Interpretation of Information Rate](https://www.princeton.edu/~wbialek/rome/refs/kelly_56.pdf), John Kelly, 1956
-- [Beat the Dealer: A Winning Strategy for the Game of Twenty-One](https://www.amazon.com/Beat-Dealer-Winning-Strategy-Twenty-One/dp/0394703103), Edward O. Thorp,1966
-- [Beat the Market: A Scientific Stock Market System](https://www.researchgate.net/publication/275756748_Beat_the_Market_A_Scientific_Stock_Market_System) , Edward O. Thorp,1967
-- [Quantitative Trading: How to Build Your Own Algorithmic Trading Business](https://www.amazon.com/Quantitative-Trading-Build-Algorithmic-Business/dp/0470284889/ref=sr_1_2?s=books&ie=UTF8&qid=1545525861&sr=1-2), Ernie Chan, 2008
+- [信息率的新解释](https://www.princeton.edu/~wbialek/rome/refs/kelly_56.pdf)，John Kelly，1956 年
+- [击败庄家：21 人游戏的制胜策略](https://www.amazon.com/Beat-Dealer-Winning-Strategy-Twenty-One/dp/0394703103)，Edward O. Thorp， 1966年
+- [击败市场：科学的股票市场系统](https://www.researchgate.net/publication/275756748_Beat_the_Market_A_Scientific_Stock_Market_System)，Edward O. Thorp，1967
+- [量化交易：如何建立自己的算法交易业务](https://www.amazon.com/Quantitative-Trading-Build-Algorithmic-Business/dp/0470284889/ref=sr_1_2?s=books&ie=UTF8&qid=1545525861&sr =1-2), Ernie Chan, 2008
 
-#### Alternatives to MV Optimization with Python
+#### 使用 Python 进行 MV 优化的替代方案
 
-- The notebook [kelly_rule](05_kelly_rule.ipynb) demonstrates the application for the single and multiple asset case. 
-- The latter result is also included in the notebook [mean_variance_optimization](04_mean_variance_optimization.ipynb), along with several other alternative approaches.
+- notebook [kelly_rule](05_kelly_rule.ipynb) 演示了单个和多个资产案例的应用。
+- 后者的结果也包含在笔记本 [mean_variance_optimization](04_mean_variance_optimization.ipynb) 中，以及其他几种替代方法。
 
-### Hierarchical Risk Parity
+### 分层风险平价
 
-This novel approach developed by [Marcos Lopez de Prado](http://www.quantresearch.org/) aims to address three major concerns of quadratic optimizers, in general, and Markowitz’s critical line algorithm (CLA), in particular: 
-- instability, 
-- concentration, and 
-- underperformance. 
+这种由 [Marcos Lopez de Prado](http://www.quantresearch.org/) 开发的新方法旨在解决一般二次优化器和马科维茨临界线算法 (CLA) 的三个主要问题，特别是：
+- 不稳定，
+- 浓度，和
+- 表现不佳。
 
-Hierarchical Risk Parity (HRP) applies graph theory and machine-learning to build a diversified portfolio based on the information contained in the covariance matrix. However, unlike quadratic optimizers, HRP does not require the invertibility of the covariance matrix. In fact, HRP can compute a portfolio on an ill-degenerated or even a singular covariance matrix—an impossible feat for quadratic optimizers. Monte Carlo experiments show that HRP delivers lower out-of-sample variance than CLA, even though minimum variance is CLA’s optimization objective. HRP also produces less risky portfolios out of sample compared to traditional risk parity methods. We will discuss HRP in more detail in [Chapter 13](../13_unsupervised_learning) when we discuss applications of unsupervised learning, including hierarchical clustering, to trading.
+分层风险平价 (HRP) 应用图论和机器学习，根据协方差矩阵中包含的信息构建多元化投资组合。然而，与二次优化器不同，HRP 不需要协方差矩阵的可逆性。事实上，HRP 可以在病态退化甚至奇异的协方差矩阵上计算投资组合——这对于二次优化器来说是一项不可能完成的壮举。蒙特卡洛实验表明，HRP 提供的样本外方差低于 CLA，尽管最小方差是 CLA 的优化目标。与传统的风险平价方法相比，HRP 还可以从样本中生成风险较低的投资组合。我们将在 [第 13 章](../13_unsupervised_learning) 讨论无监督学习（包括层次聚类）在交易中的应用时更详细地讨论 HRP。
 
-- [Building diversified portfolios that outperform out of sample](https://jpm.pm-research.com/content/42/4/59.short), Marcos López de Prado, The Journal of Portfolio Management 42, no. 4 (2016): 59-69.
-- [Hierarchical Clustering Based Asset Allocation](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2840729), Thomas Raffinot, 2016
+- [建立优于样本外的多元化投资组合](https://jpm.pm-research.com/content/42/4/59.short)，Marcos López de Prado，《投资组合管理杂志》42，第 1 期。 4（2016 年）：59-69。
+- [基于分层聚类的资产分配](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2840729)，Thomas Raffinot，2016 年
 
-We demonstrate how to implement HRP and compare it to alternatives in Chapter 13 on [Unsupervised Learning](../13_unsupervised_learning) where we also introduce hierarchical clustering.
+我们演示了如何实施 HRP 并将其与第 13 章[无监督学习](../13_unsupervised_learning) 中的替代方案进行比较，其中我们还介绍了层次聚类。
 
-## Trading and managing a portfolio with `Zipline`
+## 使用 `Zipline` 交易和管理投资组合
 
-The open source [zipline](https://zipline.ml4trading.io/index.html) library is an event-driven backtesting system maintained and used in production by the crowd-sourced quantitative investment fund [Quantopian](https://www.quantopian.com/) to facilitate algorithm-development and live-trading. It automates the algorithm's reaction to trade events and provides it with current and historical point-in-time data that avoids look-ahead bias. [Chapter 8 - The ML4T Workflow](../08_strategy_workflow) has a more detailed, dedicated introduction to backtesting using both `zipline` and `backtrader`. 
+开源[zipline](https://zipline.ml4trading.io/index.html)库是由众包量化投资基金[Quantopian](https:// www.quantopian.com/) 以促进算法开发和实时交易。它使算法对交易事件的反应自动化，并为其提供当前和历史时间点数据，避免前瞻性偏差。 [第 8 章 - ML4T 工作流程](../08_strategy_workflow) 更详细、专门介绍了使用 `zipline` 和 `backtrader` 进行回溯测试。
 
-In [Chapter 4](../04_alpha_factor_research), we introduced `zipline` to simulate the computation of alpha factors from trailing cross-sectional market, fundamental, and alternative data. Now we will exploit the alpha factors to derive and act on buy and sell signals. 
+在 [第 4 章](../04_alpha_factor_research) 中，我们引入了 `zipline` 来模拟从尾随横截面市场、基本面和另类数据计算 alpha 因子。现在我们将利用 alpha 因子来导出买卖信号并对其采取行动。
 
-### Code Examples: Backtests with trades and portfolio optimization 
+### 代码示例：通过交易和投资组合优化进行回测
 
-The code for this section lives in the following two notebooks: 
-- The notebooks in this section use the `conda` environment `backtest`. Please see the installation [instructions](../installation/README.md) for downloading the latest Docker image or alternative ways to set up your environment.
-- The notebook [backtest_with_trades](01_backtest_with_trades.ipynb) simulates the trading decisions that build a portfolio based on the simple MeanReversion alpha factor from the last chapter using Zipline. We not explicitly optimize the portfolio weights and just assign positions of equal value to each holding.
-- The notebook [backtest_with_pf_optimization](02_backtest_with_pf_optimization.ipynb) demonstrates how to use PF optimization as part of a simple strategy backtest. 
+本节的代码位于以下两个笔记本中：
+- 本节中的笔记本使用 `conda` 环境 `backtest`。请参阅安装 [instructions](../installation/README.md) 下载最新的 Docker 镜像或设置环境的其他方法。
+- 笔记本 [backtest_with_trades](01_backtest_with_trades.ipynb) 模拟交易决策，这些决策基于上一章使用 Zipline 的简单 MeanReversion alpha 因子构建投资组合。我们没有明确优化投资组合权重，只是为每个持股分配同等价值的头寸。
+- 笔记本 [backtest_with_pf_optimization](02_backtest_with_pf_optimization.ipynb) 演示了如何将 PF 优化用作简单策略回测的一部分。
 
-## Measure backtest performance with `pyfolio`
+## 使用 `pyfolio` 测量回测性能
 
-Pyfolio facilitates the analysis of portfolio performance and risk in-sample and out-of-sample using many standard metrics. It produces tear sheets covering the analysis of returns, positions, and transactions, as well as event risk during periods of market stress using several built-in scenarios, and also includes Bayesian out-of-sample performance analysis.
+Pyfolio 使用许多标准指标促进样本内和样本外的投资组合绩效和风险分析。它使用多个内置场景生成涵盖回报、头寸和交易分析以及市场压力期间事件风险分析的撕样，还包括贝叶斯样本外绩效分析。
 
-### Code Example: `pyfolio` evaluation from a `Zipline` backtest
+### 代码示例：来自 `Zipline` 回测的 `pyfolio` 评估
 
-The notebook [pyfolio_demo](03_pyfolio_demo.ipynb) illustrates how to extract the `pyfolio` input from the backtest conducted in the previous folder. It then proceeds to calculate several performance metrics and tear sheets using `pyfolio`
+笔记本 [pyfolio_demo](03_pyfolio_demo.ipynb) 说明了如何从上一个文件夹中进行的回测中提取 `pyfolio` 输入。然后它继续使用 pyfolio 计算几个性能指标和撕纸
 
-- This notebook requires the `conda` environment `backtest`. Please see the [installation instructions](../installation/README.md) for running the latest Docker image or alternative ways to set up your environment.
+- 此笔记本需要 `conda` 环境 `backtest`。请参阅 [安装说明](../installation/README.md) 以运行最新的 Docker 映像或设置环境的其他方法。
