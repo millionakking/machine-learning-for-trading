@@ -6,3 +6,4 @@
 *.h5
 *.csv
 data/cn_hs300_stocks
+24_alpha_factor_library/cn_alphas.h5
